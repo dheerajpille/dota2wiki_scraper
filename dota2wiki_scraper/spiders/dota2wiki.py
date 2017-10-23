@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import scrapy
 
-from w3lib.html import remove_tags
+from prettytable import PrettyTable
 
 class Dota2wikiSpider(scrapy.Spider):
     name = 'dota2wiki'
@@ -11,8 +11,17 @@ class Dota2wikiSpider(scrapy.Spider):
         self.start_urls = ['https://dota2.gamepedia.com/%s' % kwargs.get('hero')]
 
     def parse(self, response):
-        lore = response.xpath('//*[contains(concat( " ", @class, " " ), concat( " ", "biobox", " " ))]//tr[(((count(preceding-sibling::*) + 1) = 4) and parent::*)]//td/text()').extract()
-        talent = response.xpath('//*[contains(concat( " ", @class, " " ), concat( " ", "wikitable", " " ))]//td/text()').extract()
 
-        # TODO: yield/return this later
+        # Lore XPath
+        lore = response.xpath('//*[contains(concat( " ", @class, " " ), concat( " ", "biobox", " " ))]//'
+                              'tr[(((count(preceding-sibling::*) + 1) = 4) and parent::*)]//td/text()').extract()
+
+        # Talent tree XPath
+        talent = response.xpath('//*[contains(concat( " ", @class, " " ), concat( " ", "wikitable", " " ))]'
+                                '//td/text()').extract()
+
+        while "\n" in talent:
+            talent.remove("\n")
+
+        # TODO: yield/return these
         print(talent)
