@@ -12,7 +12,7 @@ class Dota2wikiSpider(scrapy.Spider):
 
     def parse(self, response):
         lore = response.xpath('//*[contains(concat( " ", @class, " " ), concat( " ", "biobox", " " ))]//tr[(((count(preceding-sibling::*) + 1) = 4) and parent::*)]//td/text()').extract()
-        talent = response.xpath('//*[contains(concat( " ", @class, " " ), concat( " ", "wikitable", " " ))]//td').extract()
+        talent = response.xpath('//*[contains(concat( " ", @class, " " ), concat( " ", "wikitable", " " ))]//td/text()').extract()
 
         # TODO: yield/return this later
         print(talent)
