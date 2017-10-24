@@ -44,45 +44,19 @@ class Dota2wikiSpider(scrapy.Spider):
             level -= 5
             index += 2
 
-        misc_table = PrettyTable(['Key', 'Value'])
+        stat_table = PrettyTable(['STR Gain', 'AGI Gain', 'INT Gain'])
 
-        misc_key = response.xpath('//*[contains(concat( " ", @class, " " ), concat( " ", "oddrowsgray", " " ))]//th'
-                                  '//text()').extract()
+        stat = response.xpath('//tr[(((count(preceding-sibling::*) + 1) = 3) and parent::*)]//tr//td'
+                                   '//text()').extract()
 
-        while ' ' in misc_key:
-            misc_key.remove(' ')
+        while ' ' in stat:
+            stat.remove(' ')
 
-        while '\n' in misc_key:
-            misc_key.remove('\n')
+        stat_table.add_row([stat[0] + stat[1],
+                            stat[2] + stat[3],
+                            stat[4] + stat[5]])
+        print(stat_table)
 
-        misc_val_raw = response.xpath('//*[contains(concat( " ", @class, " " ), concat( " ", "oddrowsgray", " " ))]//td'
-                                       '//text()').extract()
-
-        while ' ' in misc_val_raw:
-            misc_val_raw.remove(' ')
-
-        while '\n' in misc_val_raw:
-            misc_val_raw.remove('\n')
-
-        misc_val = []
-        index = 0
-
-        while index < len(misc_val_raw):
-            if misc_val_raw[index] == '/' or misc_val_raw[index] == '+':
-                misc_val.pop()
-                misc_val.append(''.join(misc_val_raw[index-1:index+2]))
-                index += 2
-            else:
-                misc_val.append(misc_val_raw[index])
-                index += 1
-
-        index = 0
-
-        while index < 10:
-            misc_table.add_row([misc_key[index], misc_val[index]])
-            index += 1
-
-        print(misc_table)
 
     def parse_title(self, response):
 
@@ -103,13 +77,61 @@ class Dota2wikiSpider(scrapy.Spider):
 
     def parse_stat_gain(self, response):
 
-        stat_gain_table = PrettyTable(['STR Gain', 'AGI Gain', 'INT Gain'])
+        stat_table = PrettyTable(['STR Gain', 'AGI Gain', 'INT Gain'])
 
-        stat_gain = response.xpath('//tr[(((count(preceding-sibling::*) + 1) = 3) and parent::*)]//tr//td/text()').extract()
+        stat_base = response.xpath('//*[contains(concat( " ", @class, " " ), concat( " ", "infobox", " " ))]//b'
+                                   '//text()').extract()
+
+        stat_gain = response.xpath('//tr[(((count(preceding-sibling::*) + 1) = 3) and parent::*)]//tr//td'
+                                   '//text()').extract()
 
         while ' ' in stat_gain:
             stat_gain.remove(' ')
 
-        stat_gain_table.add_row([gain[0].strip(), gain[1].strip(), gain[2].strip()])
+        stat_table.add_row([stat_base[0]+'+'+stat_gain[0].strip(),
+                            stat_base[1]+'+'+stat_gain[1].strip(),
+                            stat_base[2]+'+'+stat_gain[2].strip()])
 
         yield stat_gain_table
+
+    def parse_misc_data(self, response):
+
+        misc_table = PrettyTable(['Key', 'Value'])
+
+        misc_key = response.xpath('//*[contains(concat( " ", @class, " " ), concat( " ", "oddrowsgray", " " ))]//th'
+                                  '//text()').extract()
+
+        while ' ' in misc_key:
+            misc_key.remove(' ')
+
+        while '\n' in misc_key:
+            misc_key.remove('\n')
+
+        misc_val_raw = response.xpath('//*[contains(concat( " ", @class, " " ), concat( " ", "oddrowsgray", " " ))]//td'
+                                      '//text()').extract()
+
+        while ' ' in misc_val_raw:
+            misc_val_raw.remove(' ')
+
+        while '\n' in misc_val_raw:
+            misc_val_raw.remove('\n')
+
+        misc_val = []
+        index = 0
+
+        while index < len(misc_val_raw):
+            if misc_val_raw[index] == '/' or misc_val_raw[index] == '+':
+                misc_val.pop()
+                misc_val.append(''.join(misc_val_raw[index - 1:index + 2]))
+                index += 2
+            else:
+                misc_val.append(misc_val_raw[index])
+                index += 1
+
+        index = 0
+
+        while index < 10:
+            misc_table.add_row([misc_key[index], misc_val[index]])
+            index += 1
+
+        print(misc_table)
