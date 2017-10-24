@@ -16,7 +16,16 @@ class Dota2wikiSpider(scrapy.Spider):
         lore = response.xpath('//*[contains(concat( " ", @class, " " ), concat( " ", "biobox", " " ))]//'
                               'tr[(((count(preceding-sibling::*) + 1) = 4) and parent::*)]//td/text()').extract()
 
-        table = PrettyTable(['Talent 1', 'Level', 'Talent 2'])
+        gain_table = PrettyTable(['STR Gain', 'AGI Gain', 'INT Gain'])
+
+        gain = response.xpath('//tr[(((count(preceding-sibling::*) + 1) = 3) and parent::*)]//tr//td/text()').extract()
+
+        while ' ' in gain:
+            gain.remove(' ')
+
+        gain_table.add_row([gain[0], gain[1], gain[2]])
+
+        talent_table = PrettyTable(['Talent 1', 'Level', 'Talent 2'])
 
         # Talent tree XPath
         # TODO: get text from spans and hyperlinks
@@ -30,11 +39,9 @@ class Dota2wikiSpider(scrapy.Spider):
         index = 0
 
         while level >= 10:
-            table.add_row([talent[index], level, talent[index+1]])
+            talent_table.add_row([talent[index], level, talent[index+1]])
             level -= 5
             index += 2
 
         # TODO: yield/return these
-        print(lore)
-        print(talent)
-        print(table)
+        print(gain_table)
