@@ -12,6 +12,10 @@ class Dota2wikiSpider(scrapy.Spider):
 
     def parse(self, response):
 
+        title = response.xpath('//*[contains(concat( " ", @class, " " ), concat( " ", "biobox", " " ))]//tr'
+                               '[(((count(preceding-sibling::*) + 1) = 1) and parent::*)]//th'
+                               '/text()').extract()[1].strip()
+
         # Lore XPath
         lore = response.xpath('//*[contains(concat( " ", @class, " " ), concat( " ", "biobox", " " ))]//'
                               'tr[(((count(preceding-sibling::*) + 1) = 4) and parent::*)]//td/text()').extract()
@@ -23,25 +27,34 @@ class Dota2wikiSpider(scrapy.Spider):
         while ' ' in gain:
             gain.remove(' ')
 
-        gain_table.add_row([gain[0], gain[1], gain[2]])
+        gain_table.add_row([gain[0].strip(), gain[1].strip(), gain[2].strip()])
 
         talent_table = PrettyTable(['Talent 1', 'Level', 'Talent 2'])
 
         # Talent tree XPath
         # TODO: get text from spans and hyperlinks
-        talent = response.xpath('//*[contains(concat( " ", @class, " " ), concat( " ", "wikitable", " " ))]'
-                                '//td/text()').extract()
+        talent_raw = response.xpath('//*[contains(concat( " ", @class, " " ), concat( " ", "wikitable", " " ))]//td//text()').extract()
 
-        while "\n" in talent:
-            talent.remove("\n")
+        while ' ' in talent_raw:
+            talent_raw.remove(' ')
+
+        start = 0
+        end = 0
+        talent_list = []
+
+        for x in talent_raw:
+            end += 1
+            if x[-1:] == '\n':
+                talent_list.append(''.join(talent_raw[start:end]))
+                start = end
 
         level = 25
         index = 0
 
         while level >= 10:
-            talent_table.add_row([talent[index], level, talent[index+1]])
+            talent_table.add_row([talent_list[index], level, talent_list[index+1]])
             level -= 5
             index += 2
 
         # TODO: yield/return these
-        print(gain_table)
+        print(talent_table)
