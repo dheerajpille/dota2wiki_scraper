@@ -27,10 +27,12 @@ class Dota2wikiSpider(scrapy.Spider):
             talent.remove("\n")
 
         level = 25
+        index = 0
 
         while level >= 10:
-            table.add_row([talent[0], level, talent[1]])
+            table.add_row([talent[index], level, talent[index+1]])
             level -= 5
+            index += 2
 
         # TODO: yield/return these
         print(lore)
