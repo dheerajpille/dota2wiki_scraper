@@ -28,10 +28,17 @@
       <file leaf-file-name="dota2wiki.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/dota2wiki_scraper/spiders/dota2wiki.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="541">
-              <caret line="50" column="18" lean-forward="true" selection-start-line="50" selection-start-column="18" selection-end-line="50" selection-end-column="18" />
+            <state relative-caret-position="473">
+              <caret line="83" column="12" lean-forward="false" selection-start-line="83" selection-start-column="12" selection-end-line="83" selection-end-column="12" />
               <folding>
                 <element signature="e#24#37#0" expanded="true" />
+                <element signature="e#505#632#0" expanded="false" />
+                <element signature="e#1022#1166#0" expanded="false" />
+                <element signature="e#1078#1156#0" expanded="false" />
+                <element signature="e#1338#1455#0" expanded="false" />
+                <element signature="e#2751#3087#0" expanded="false" />
+                <element signature="e#3134#3391#0" expanded="false" />
+                <element signature="e#3443#3820#0" expanded="false" />
               </folding>
             </state>
           </provider>
@@ -195,10 +202,17 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/dota2wiki_scraper/spiders/dota2wiki.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="541">
-          <caret line="50" column="18" lean-forward="true" selection-start-line="50" selection-start-column="18" selection-end-line="50" selection-end-column="18" />
+        <state relative-caret-position="473">
+          <caret line="83" column="12" lean-forward="false" selection-start-line="83" selection-start-column="12" selection-end-line="83" selection-end-column="12" />
           <folding>
             <element signature="e#24#37#0" expanded="true" />
+            <element signature="e#505#632#0" expanded="false" />
+            <element signature="e#1022#1166#0" expanded="false" />
+            <element signature="e#1078#1156#0" expanded="false" />
+            <element signature="e#1338#1455#0" expanded="false" />
+            <element signature="e#2751#3087#0" expanded="false" />
+            <element signature="e#3134#3391#0" expanded="false" />
+            <element signature="e#3443#3820#0" expanded="false" />
           </folding>
         </state>
       </provider>
