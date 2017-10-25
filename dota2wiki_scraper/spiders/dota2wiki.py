@@ -3,6 +3,7 @@ import scrapy
 
 from prettytable import PrettyTable
 
+
 class Dota2wikiSpider(scrapy.Spider):
     name = 'dota2wiki'
 
@@ -44,6 +45,65 @@ class Dota2wikiSpider(scrapy.Spider):
             level -= 5
             index += 2
 
+        ability_raw = response.xpath('//*[(@id = "mw-content-text")]//div//div//div//text()').extract()
+
+        ability_raw = [x.strip() for x in ability_raw]
+
+        while '' in ability_raw:
+            ability_raw.remove('')
+
+        # Removes sound text
+        while 'Play' in ability_raw:
+            ability_raw.remove('Play')
+
+        while ':' in ability_raw:
+            ability_raw.remove(':')
+
+        index = 0
+        ability_data = []
+
+        remove_follow = False
+
+        while index < len(ability_raw):
+
+            print(ability_raw[index])
+            index += 1
+
+
+    def parse_title(self, response):
+
+        # Hero title without leading and trailing spaces
+        title = response.xpath('//*[contains(concat( " ", @class, " " ), concat( " ", "biobox", " " ))]//tr'
+                               '[(((count(preceding-sibling::*) + 1) = 1) and parent::*)]//th'
+                               '/text()').extract()[1].strip()
+
+        yield title
+
+    def parse_lore(self, response):
+
+        # Hero lore XPath
+        lore = response.xpath('//*[contains(concat( " ", @class, " " ), concat( " ", "biobox", " " ))]//'
+                              'tr[(((count(preceding-sibling::*) + 1) = 4) and parent::*)]//td/text()').extract()
+
+        yield lore
+
+    def parse_stat_gain(self, response):
+
+        stat_table = PrettyTable(['STR Gain', 'AGI Gain', 'INT Gain'])
+
+        stat = response.xpath('//tr[(((count(preceding-sibling::*) + 1) = 3) and parent::*)]//tr//td'
+                              '//text()').extract()
+
+        while ' ' in stat:
+            stat.remove(' ')
+
+        stat_table.add_row([stat[0] + stat[1],
+                            stat[2] + stat[3],
+                            stat[4] + stat[5]])
+
+        yield stat_table
+
+    def parse_data(self, response):
         header = response.xpath('//*[contains(concat( " ", @class, " " ), concat( " ", "evenrowsgray", " " ))]'
                                 '//th[(((count(preceding-sibling::*) + 1) = 1) and parent::*)]//text()').extract()
 
@@ -78,43 +138,10 @@ class Dota2wikiSpider(scrapy.Spider):
         index = 0
 
         while index < len(header) - 1:
-            data_table.add_row([header[index+1], level_base[index], level_1[index], level_15[index], level_25[index]])
+            data_table.add_row([header[index + 1], level_base[index], level_1[index], level_15[index], level_25[index]])
             index += 1
 
-        print(data_table)
-
-    def parse_title(self, response):
-
-        # Hero title without leading and trailing spaces
-        title = response.xpath('//*[contains(concat( " ", @class, " " ), concat( " ", "biobox", " " ))]//tr'
-                               '[(((count(preceding-sibling::*) + 1) = 1) and parent::*)]//th'
-                               '/text()').extract()[1].strip()
-
-        yield title
-
-    def parse_lore(self, response):
-
-        # Hero lore XPath
-        lore = response.xpath('//*[contains(concat( " ", @class, " " ), concat( " ", "biobox", " " ))]//'
-                              'tr[(((count(preceding-sibling::*) + 1) = 4) and parent::*)]//td/text()').extract()
-
-        yield lore
-
-    def parse_stat_gain(self, response):
-
-        stat_table = PrettyTable(['STR Gain', 'AGI Gain', 'INT Gain'])
-
-        stat = response.xpath('//tr[(((count(preceding-sibling::*) + 1) = 3) and parent::*)]//tr//td'
-                              '//text()').extract()
-
-        while ' ' in stat:
-            stat.remove(' ')
-
-        stat_table.add_row([stat[0] + stat[1],
-                            stat[2] + stat[3],
-                            stat[4] + stat[5]])
-
-        yield stat_table
+        yield(data_table)
 
     def parse_misc_data(self, response):
 
@@ -157,3 +184,39 @@ class Dota2wikiSpider(scrapy.Spider):
             index += 1
 
         print(misc_table)
+
+    def parse_talent(self, response):
+
+        talent_table = PrettyTable(['Talent 1', 'Level', 'Talent 2'])
+
+        # Talent tree XPath
+        talent_raw = response.xpath('//*[contains(concat( " ", @class, " " ), concat( " ", "wikitable", " " ))]'
+                                    '//td//text()').extract()
+
+        # Removes extra spaces generated in space of images/icons
+        while ' ' in talent_raw:
+            talent_raw.remove(' ')
+
+        # Indices and list for talent_table data
+        start = 0
+        end = 0
+        talent_list = []
+
+        # Appends items which do not end with newline character for talent_table formatting
+        for x in talent_raw:
+            end += 1
+            if x[-1:] == '\n':
+                talent_list.append(''.join(talent_raw[start:end]))
+                start = end
+
+        # Level and talent_list index for talent_table
+        level = 25
+        index = 0
+
+        # Adds talent_list data to talent_table
+        while level >= 10:
+            talent_table.add_row([talent_list[index], level, talent_list[index + 1]])
+            level -= 5
+            index += 2
+
+        yield(talent_table)
