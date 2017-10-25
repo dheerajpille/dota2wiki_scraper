@@ -44,19 +44,44 @@ class Dota2wikiSpider(scrapy.Spider):
             level -= 5
             index += 2
 
-        stat_table = PrettyTable(['STR Gain', 'AGI Gain', 'INT Gain'])
+        header = response.xpath('//*[contains(concat( " ", @class, " " ), concat( " ", "evenrowsgray", " " ))]'
+                                '//th[(((count(preceding-sibling::*) + 1) = 1) and parent::*)]//text()').extract()
 
-        stat = response.xpath('//tr[(((count(preceding-sibling::*) + 1) = 3) and parent::*)]//tr//td'
-                                   '//text()').extract()
+        header = [x.strip() for x in header]
 
-        while ' ' in stat:
-            stat.remove(' ')
+        while '' in header:
+            header.remove('')
 
-        stat_table.add_row([stat[0] + stat[1],
-                            stat[2] + stat[3],
-                            stat[4] + stat[5]])
-        print(stat_table)
+        data_table = PrettyTable([header[0], 'Base', '1', '15', '25'])
 
+        data = response.xpath('//*[contains(concat( " ", @class, " " ), concat( " ", "evenrowsgray", " " ))]//td'
+                              '//text()').extract()
+
+        index = 0
+
+        level_base = []
+        level_1 = []
+        level_15 = []
+        level_25 = []
+
+        while index < len(data):
+            if index % 4 == 0:
+                level_base.append(data[index])
+            elif index % 4 == 1:
+                level_1.append(data[index])
+            elif index % 4 == 2:
+                level_15.append(data[index])
+            else:
+                level_25.append(data[index])
+            index += 1
+
+        index = 0
+
+        while index < len(header) - 1:
+            data_table.add_row([header[index+1], level_base[index], level_1[index], level_15[index], level_25[index]])
+            index += 1
+
+        print(data_table)
 
     def parse_title(self, response):
 
@@ -79,20 +104,17 @@ class Dota2wikiSpider(scrapy.Spider):
 
         stat_table = PrettyTable(['STR Gain', 'AGI Gain', 'INT Gain'])
 
-        stat_base = response.xpath('//*[contains(concat( " ", @class, " " ), concat( " ", "infobox", " " ))]//b'
-                                   '//text()').extract()
+        stat = response.xpath('//tr[(((count(preceding-sibling::*) + 1) = 3) and parent::*)]//tr//td'
+                              '//text()').extract()
 
-        stat_gain = response.xpath('//tr[(((count(preceding-sibling::*) + 1) = 3) and parent::*)]//tr//td'
-                                   '//text()').extract()
+        while ' ' in stat:
+            stat.remove(' ')
 
-        while ' ' in stat_gain:
-            stat_gain.remove(' ')
+        stat_table.add_row([stat[0] + stat[1],
+                            stat[2] + stat[3],
+                            stat[4] + stat[5]])
 
-        stat_table.add_row([stat_base[0]+'+'+stat_gain[0].strip(),
-                            stat_base[1]+'+'+stat_gain[1].strip(),
-                            stat_base[2]+'+'+stat_gain[2].strip()])
-
-        yield stat_gain_table
+        yield stat_table
 
     def parse_misc_data(self, response):
 
