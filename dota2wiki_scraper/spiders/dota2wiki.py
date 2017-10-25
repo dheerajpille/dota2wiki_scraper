@@ -60,14 +60,45 @@ class Dota2wikiSpider(scrapy.Spider):
             ability_raw.remove(':')
 
         index = 0
+
+        # Removes cosmetic data
+        while index < len(ability_raw):
+            if ability_raw[index] == "Sets":
+                ability_raw = ability_raw[0:index]
+
+            index += 1
+
+        index = 0
         ability_data = []
 
-        remove_follow = False
-
+        # Appended values separated by '+'
         while index < len(ability_raw):
 
-            print(ability_raw[index])
+            # Used to append values for cast-time and back-swing and multiple types
+            if ability_raw[index] == '+' or ability_raw[index] == '/':
+                ability_data[-1] = ability_data[-1] + ability_raw[index] + ability_raw[index + 1]
+                index += 1
+            elif ability_raw[index][-1] == '/':
+                values = ability_raw[index]
+                while True:
+                    index += 1
+                    if ability_raw[index][-1] != '/':
+                        values += ability_raw[index]
+                        ability_data.append(values)
+                        break
+                    else:
+                        values += ability_raw[index]
+            elif ability_raw[index][-1] == '(':
+                while True:
+                    index += 1
+                    if ability_raw[index][-1] == ')':
+                        break
+            else:
+                ability_data.append(ability_raw[index])
             index += 1
+
+        for x in ability_data:
+            print(x)
 
 
     def parse_title(self, response):
