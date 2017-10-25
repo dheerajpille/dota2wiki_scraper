@@ -82,6 +82,7 @@ class Dota2wikiSpider(scrapy.Spider):
                 values = ability_raw[index]
                 while True:
                     index += 1
+                    # TODO: simplify this
                     if ability_raw[index][-1] != '/':
                         values += ability_raw[index]
                         ability_data.append(values)
@@ -89,6 +90,8 @@ class Dota2wikiSpider(scrapy.Spider):
                     else:
                         values += ability_raw[index]
             elif ability_raw[index][-1] == '(':
+                # TODO: remove notes after mana cost and before modifiers
+                ability_data.append(ability_raw[index][:-1])
                 while True:
                     index += 1
                     if ability_raw[index][-1] == ')':
