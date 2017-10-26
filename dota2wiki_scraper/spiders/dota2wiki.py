@@ -46,70 +46,27 @@ class Dota2wikiSpider(scrapy.Spider):
             index += 2
 
         # TODO: do span and b for values
-        ability_raw = response.xpath('//*[(@id = "mw-content-text")]//div//div//div[contains(@style, "font-weight: bold; font-size: 110%; border-bottom: 1px solid black; background-color: #B44335; color: white; padding: 3px 5px;")]/text()').extract()
+        ability_normal = response.xpath('//*[(@id = "mw-content-text")]//div//div//div[contains(@style, "font-weight: '
+                                        'bold; font-size: 110%; border-bottom: 1px solid black; background-color: '
+                                        '#B44335; color: white; padding: 3px 5px;")]/text()').extract()
 
-        ability_raw = [x.strip() for x in ability_raw]
+        while '\n' in ability_normal:
+            ability_normal.remove('\n')
 
-        while '' in ability_raw:
-            ability_raw.remove('')
+        print(ability_normal)
 
-        # Removes sound text
-        while 'Play' in ability_raw:
-            ability_raw.remove('Play')
+        ability_ult = response.xpath('//*[(@id = "mw-content-text")]//div//div//div[contains(@style, "font-weight: '
+                                     'bold; font-size: 110%; border-bottom: 1px solid black; background-color: '
+                                     '#414141; color: white; padding: 3px 5px;")]/text()').extract()
 
-        while ':' in ability_raw:
-            ability_raw.remove(':')
+        while '\n' in ability_ult:
+            ability_ult.remove('\n')
 
-        index = 0
+        print(ability_ult)
 
-        # Removes cosmetic data
-        while index < len(ability_raw):
-            if ability_raw[index] == "Sets":
-                ability_raw = ability_raw[0:index]
+        ability = response.xpath('//*[(@id = "mw-content-text")]//div//div//div/text()').extract()
 
-            index += 1
-
-        index = 0
-        ability_data = []
-
-        # Appended values separated by '+'
-        while index < len(ability_raw):
-
-            # Used to append values for cast-time and back-swing and multiple types
-            if ability_raw[index] == '+' or ability_raw[index] == '/':
-                ability_data[-1] = ability_data[-1] + ability_raw[index] + ability_raw[index + 1]
-                index += 1
-            elif ability_raw[index][-1] == '/':
-                values = ability_raw[index]
-                while True:
-                    index += 1
-                    # TODO: simplify this
-                    if ability_raw[index][-1] != '/':
-                        values += ability_raw[index]
-                        ability_data.append(values)
-                        break
-                    else:
-                        values += ability_raw[index]
-            elif ability_raw[index][-1] == '(':
-
-                # TODO: remove notes after mana cost and before modifiers
-                ability_data.append(ability_raw[index][:-1])
-                while True:
-                    index += 1
-                    if ability_raw[index][-1] == ')':
-                        break
-            else:
-                ability_data.append(ability_raw[index])
-            index += 1
-
-        while '' in ability_data:
-            ability_data.remove('')
-
-        for x in ability_data:
-            print(x)
-
-        print(ability_data)
-
+        print(ability)
 
     def parse_title(self, response):
 
