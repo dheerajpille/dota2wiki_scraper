@@ -45,7 +45,8 @@ class Dota2wikiSpider(scrapy.Spider):
             level -= 5
             index += 2
 
-        ability_raw = response.xpath('//*[(@id = "mw-content-text")]//div//div//div//text()').extract()
+        # TODO: do span and b for values
+        ability_raw = response.xpath('//*[(@id = "mw-content-text")]//div//div//div[contains(@style, "font-weight: bold; font-size: 110%; border-bottom: 1px solid black; background-color: #B44335; color: white; padding: 3px 5px;")]/text()').extract()
 
         ability_raw = [x.strip() for x in ability_raw]
 
@@ -90,6 +91,7 @@ class Dota2wikiSpider(scrapy.Spider):
                     else:
                         values += ability_raw[index]
             elif ability_raw[index][-1] == '(':
+
                 # TODO: remove notes after mana cost and before modifiers
                 ability_data.append(ability_raw[index][:-1])
                 while True:
@@ -100,8 +102,13 @@ class Dota2wikiSpider(scrapy.Spider):
                 ability_data.append(ability_raw[index])
             index += 1
 
+        while '' in ability_data:
+            ability_data.remove('')
+
         for x in ability_data:
             print(x)
+
+        print(ability_data)
 
 
     def parse_title(self, response):

@@ -12,6 +12,9 @@
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
+  <component name="CoverageDataManager">
+    <SUITE FILE_PATH="coverage/dota2wiki_scraper$dota2wiki.coverage" NAME="dota2wiki Coverage Results" MODIFIED="1508966690861" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/dota2wiki_scraper/spiders" />
+  </component>
   <component name="DatabaseView">
     <option name="SHOW_INTERMEDIATE" value="true" />
     <option name="GROUP_SCHEMA" value="true" />
@@ -28,20 +31,20 @@
       <file leaf-file-name="dota2wiki.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/dota2wiki_scraper/spiders/dota2wiki.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="536">
-              <caret line="92" column="73" lean-forward="false" selection-start-line="92" selection-start-column="73" selection-end-line="92" selection-end-column="73" />
+            <state relative-caret-position="331">
+              <caret line="48" column="236" lean-forward="false" selection-start-line="48" selection-start-column="236" selection-end-line="48" selection-end-column="236" />
               <folding>
                 <element signature="e#24#37#0" expanded="true" />
                 <element signature="e#506#633#0" expanded="false" />
                 <element signature="e#1023#1167#0" expanded="false" />
                 <element signature="e#1079#1157#0" expanded="false" />
                 <element signature="e#1339#1456#0" expanded="false" />
-                <element signature="e#3471#3807#0" expanded="false" />
-                <element signature="e#3854#4111#0" expanded="false" />
-                <element signature="e#4163#4606#0" expanded="false" />
-                <element signature="e#4652#5906#0" expanded="false" />
-                <element signature="e#5958#7187#0" expanded="false" />
-                <element signature="e#7236#8344#0" expanded="false" />
+                <element signature="e#3760#4096#0" expanded="false" />
+                <element signature="e#4143#4400#0" expanded="false" />
+                <element signature="e#4452#4895#0" expanded="false" />
+                <element signature="e#4941#6195#0" expanded="false" />
+                <element signature="e#6247#7476#0" expanded="false" />
+                <element signature="e#7525#8633#0" expanded="false" />
               </folding>
             </state>
           </provider>
@@ -81,10 +84,10 @@
     <sorting>DEFINITION_ORDER</sorting>
   </component>
   <component name="ProjectFrameBounds" extendedState="6">
-    <option name="x" value="1843" />
+    <option name="x" value="1358" />
     <option name="y" value="-8" />
-    <option name="width" value="983" />
-    <option name="height" value="521" />
+    <option name="width" value="1936" />
+    <option name="height" value="1056" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectView">
@@ -130,7 +133,7 @@
   </component>
   <component name="PropertiesComponent">
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/../ec-experimental-portal-backend" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
   </component>
   <component name="RunDashboard">
     <option name="ruleStates">
@@ -143,6 +146,31 @@
         </RuleState>
       </list>
     </option>
+  </component>
+  <component name="RunManager" selected="Python.dota2wiki">
+    <configuration name="dota2wiki" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/dota2wiki_scraper/spiders" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="dota2wiki_scraper" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" enabled="false" sample_coverage="true" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/dota2wiki_scraper/spiders/dota2wiki.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+    </configuration>
+    <recent_temporary>
+      <list size="1">
+        <item index="0" class="java.lang.String" itemvalue="Python.dota2wiki" />
+      </list>
+    </recent_temporary>
   </component>
   <component name="ShelveChangesManager" show_recycled="false">
     <option name="remove_strategy" value="false" />
@@ -164,17 +192,17 @@
     <frame x="1358" y="-8" width="1936" height="1056" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.18443497" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.18710022" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32995737" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32934782" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.14347826" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.14347826" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Data View" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
@@ -208,12 +236,12 @@
             <element signature="e#1023#1167#0" expanded="false" />
             <element signature="e#1079#1157#0" expanded="false" />
             <element signature="e#1339#1456#0" expanded="false" />
-            <element signature="e#3471#3807#0" expanded="false" />
-            <element signature="e#3854#4111#0" expanded="false" />
-            <element signature="e#4163#4606#0" expanded="false" />
-            <element signature="e#4652#5906#0" expanded="false" />
-            <element signature="e#5958#7187#0" expanded="false" />
-            <element signature="e#7236#8344#0" expanded="false" />
+            <element signature="e#3760#4096#0" expanded="false" />
+            <element signature="e#4143#4400#0" expanded="false" />
+            <element signature="e#4452#4895#0" expanded="false" />
+            <element signature="e#4941#6195#0" expanded="false" />
+            <element signature="e#6247#7476#0" expanded="false" />
+            <element signature="e#7525#8633#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -236,12 +264,12 @@
             <element signature="e#1023#1167#0" expanded="false" />
             <element signature="e#1079#1157#0" expanded="false" />
             <element signature="e#1339#1456#0" expanded="false" />
-            <element signature="e#3471#3807#0" expanded="false" />
-            <element signature="e#3854#4111#0" expanded="false" />
-            <element signature="e#4163#4606#0" expanded="false" />
-            <element signature="e#4652#5906#0" expanded="false" />
-            <element signature="e#5958#7187#0" expanded="false" />
-            <element signature="e#7236#8344#0" expanded="false" />
+            <element signature="e#3760#4096#0" expanded="false" />
+            <element signature="e#4143#4400#0" expanded="false" />
+            <element signature="e#4452#4895#0" expanded="false" />
+            <element signature="e#4941#6195#0" expanded="false" />
+            <element signature="e#6247#7476#0" expanded="false" />
+            <element signature="e#7525#8633#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -264,12 +292,12 @@
             <element signature="e#1023#1167#0" expanded="false" />
             <element signature="e#1079#1157#0" expanded="false" />
             <element signature="e#1339#1456#0" expanded="false" />
-            <element signature="e#3471#3807#0" expanded="false" />
-            <element signature="e#3854#4111#0" expanded="false" />
-            <element signature="e#4163#4606#0" expanded="false" />
-            <element signature="e#4652#5906#0" expanded="false" />
-            <element signature="e#5958#7187#0" expanded="false" />
-            <element signature="e#7236#8344#0" expanded="false" />
+            <element signature="e#3760#4096#0" expanded="false" />
+            <element signature="e#4143#4400#0" expanded="false" />
+            <element signature="e#4452#4895#0" expanded="false" />
+            <element signature="e#4941#6195#0" expanded="false" />
+            <element signature="e#6247#7476#0" expanded="false" />
+            <element signature="e#7525#8633#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -292,12 +320,40 @@
             <element signature="e#1023#1167#0" expanded="false" />
             <element signature="e#1079#1157#0" expanded="false" />
             <element signature="e#1339#1456#0" expanded="false" />
-            <element signature="e#3471#3807#0" expanded="false" />
-            <element signature="e#3854#4111#0" expanded="false" />
-            <element signature="e#4163#4606#0" expanded="false" />
-            <element signature="e#4652#5906#0" expanded="false" />
-            <element signature="e#5958#7187#0" expanded="false" />
-            <element signature="e#7236#8344#0" expanded="false" />
+            <element signature="e#3760#4096#0" expanded="false" />
+            <element signature="e#4143#4400#0" expanded="false" />
+            <element signature="e#4452#4895#0" expanded="false" />
+            <element signature="e#4941#6195#0" expanded="false" />
+            <element signature="e#6247#7476#0" expanded="false" />
+            <element signature="e#7525#8633#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/scrapy.cfg">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/dota2wiki_scraper/spiders/dota2wiki.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding>
+            <element signature="e#24#37#0" expanded="true" />
+            <element signature="e#506#633#0" expanded="false" />
+            <element signature="e#1023#1167#0" expanded="false" />
+            <element signature="e#1079#1157#0" expanded="false" />
+            <element signature="e#1339#1456#0" expanded="false" />
+            <element signature="e#3760#4096#0" expanded="false" />
+            <element signature="e#4143#4400#0" expanded="false" />
+            <element signature="e#4452#4895#0" expanded="false" />
+            <element signature="e#4941#6195#0" expanded="false" />
+            <element signature="e#6247#7476#0" expanded="false" />
+            <element signature="e#7525#8633#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -322,26 +378,25 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1054">
           <caret line="62" column="2" lean-forward="true" selection-start-line="62" selection-start-column="2" selection-end-line="62" selection-end-column="2" />
-          <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/dota2wiki_scraper/spiders/dota2wiki.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="536">
-          <caret line="92" column="73" lean-forward="false" selection-start-line="92" selection-start-column="73" selection-end-line="92" selection-end-column="73" />
+        <state relative-caret-position="331">
+          <caret line="48" column="236" lean-forward="false" selection-start-line="48" selection-start-column="236" selection-end-line="48" selection-end-column="236" />
           <folding>
             <element signature="e#24#37#0" expanded="true" />
             <element signature="e#506#633#0" expanded="false" />
             <element signature="e#1023#1167#0" expanded="false" />
             <element signature="e#1079#1157#0" expanded="false" />
             <element signature="e#1339#1456#0" expanded="false" />
-            <element signature="e#3471#3807#0" expanded="false" />
-            <element signature="e#3854#4111#0" expanded="false" />
-            <element signature="e#4163#4606#0" expanded="false" />
-            <element signature="e#4652#5906#0" expanded="false" />
-            <element signature="e#5958#7187#0" expanded="false" />
-            <element signature="e#7236#8344#0" expanded="false" />
+            <element signature="e#3760#4096#0" expanded="false" />
+            <element signature="e#4143#4400#0" expanded="false" />
+            <element signature="e#4452#4895#0" expanded="false" />
+            <element signature="e#4941#6195#0" expanded="false" />
+            <element signature="e#6247#7476#0" expanded="false" />
+            <element signature="e#7525#8633#0" expanded="false" />
           </folding>
         </state>
       </provider>
