@@ -64,9 +64,24 @@ class Dota2wikiSpider(scrapy.Spider):
 
         print(ability_ult)
 
-        ability = response.xpath('//*[(@id = "mw-content-text")]//div//div//div/text()').extract()
+        ability = response.xpath('//*[(@id = "mw-content-text")]//div//div//div//b//text()').extract()
 
-        print(ability)
+        index = 0
+
+        ability_data = []
+
+        while index < len(ability):
+            if ability[index] == 'Modifiers':
+                index += 1
+                while True:
+                    if index == len(ability) or ability[index] == 'Ability':
+                        break
+                    index += 1
+            else:
+                ability_data.append(ability[index])
+                index += 1
+
+        print(ability_data)
 
     def parse_title(self, response):
 
