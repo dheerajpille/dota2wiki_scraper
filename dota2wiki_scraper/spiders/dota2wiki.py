@@ -3,6 +3,7 @@ import scrapy
 
 from prettytable import PrettyTable
 
+from dota2wiki_scraper.items import Dota2WikiScraperItem
 
 class Dota2wikiSpider(scrapy.Spider):
     name = 'dota2wiki'
@@ -64,24 +65,29 @@ class Dota2wikiSpider(scrapy.Spider):
 
         print(ability_ult)
 
-        ability = response.xpath('//*[(@id = "mw-content-text")]//div//div//div//b//text()').extract()
+        ability_key = response.xpath('//*[(@id = "mw-content-text")]//div//div//div//b//text()').extract()
+
+        ability_value = response.xpath('//*[(@id = "mw-content-text")]//div//div//div//span/text()').extract()
+
+        while ' ' in ability_value:
+            ability_value.remove(' ')
 
         index = 0
+        ability_value_data = []
 
-        ability_data = []
-
-        while index < len(ability):
-            if ability[index] == 'Modifiers':
-                index += 1
+        while index < len(ability_value):
+            print(index)
+            if ability_value[index][-1] == '(':
                 while True:
-                    if index == len(ability) or ability[index] == 'Ability':
-                        break
                     index += 1
-            else:
-                ability_data.append(ability[index])
-                index += 1
+                    if ability_value[index][-1] == ')':
+                        index += 1
+                        break
+            ability_value_data.append(ability_value[index])
+            index += 1
 
-        print(ability_data)
+        print(ability_key)
+        print(ability_value_data)
 
     def parse_title(self, response):
 
