@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import re
 import scrapy
 
 from prettytable import PrettyTable
@@ -54,8 +55,6 @@ class Dota2wikiSpider(scrapy.Spider):
         while '\n' in ability_normal:
             ability_normal.remove('\n')
 
-        print(ability_normal)
-
         ability_ult = response.xpath('//*[(@id = "mw-content-text")]//div//div//div[contains(@style, "font-weight: '
                                      'bold; font-size: 110%; border-bottom: 1px solid black; background-color: '
                                      '#414141; color: white; padding: 3px 5px;")]/text()').extract()
@@ -63,8 +62,7 @@ class Dota2wikiSpider(scrapy.Spider):
         while '\n' in ability_ult:
             ability_ult.remove('\n')
 
-        print(ability_ult)
-
+        # TODO: figure out cast animation + backswing
         ability_key = response.xpath('//*[(@id = "mw-content-text")]//div//div//div//b//text()').extract()
 
         ability_value = response.xpath('//*[(@id = "mw-content-text")]//div//div//div//span/text()').extract()
@@ -75,19 +73,21 @@ class Dota2wikiSpider(scrapy.Spider):
         index = 0
         ability_value_data = []
 
-        while index < len(ability_value):
-            print(index)
-            if ability_value[index][-1] == '(':
-                while True:
-                    index += 1
-                    if ability_value[index][-1] == ')':
-                        index += 1
-                        break
-            ability_value_data.append(ability_value[index])
-            index += 1
+        print(ability_value)
 
-        print(ability_key)
-        print(ability_value_data)
+
+        tooltip_raw = response.xpath('//*[(@id = "mw-content-text")]//div//div//div//span[contains(@id, "tooltip")]//text()').extract()
+
+        tooltip_data = [num for num in tooltip_raw if num.replace('.', '', 1).isdigit()]
+
+        index = 0
+        tooltip = []
+
+        while index < len(tooltip_data):
+            if index % 2 == 1:
+                tooltip.append(tooltip_data[index-1] + "+" + tooltip_data[index])
+            index += 1
+        print(tooltip)
 
     def parse_title(self, response):
 
