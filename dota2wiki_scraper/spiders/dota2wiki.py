@@ -29,10 +29,14 @@ class Dota2wikiSpider(scrapy.Spider):
         while '\n' in ability_ult:
             ability_ult.remove('\n')
 
+        ability = ability_normal + ability_ult
+
         # TODO: figure out cast animation + backswing
         ability_key = response.xpath('//*[(@id = "mw-content-text")]//div//div//div//b//text()').extract()
 
-        table = values
+        ability_table = PrettyTable(['Ability', ability[0]])
+
+        print(ability_key)
 
         ability_values_raw = response.xpath('//*[(@id = "mw-content-text")]//div//div//div//span/text()').extract()
 
@@ -60,10 +64,27 @@ class Dota2wikiSpider(scrapy.Spider):
 
         print(ability_values)
 
-
         # Ability, Affects, and Damage values found in ability header
-        header_values = response.xpath('//*[(@id = "mw-content-text")]//div//div//div[contains(@style, '
-                                       '"display: inline-block; width: 32%; vertical-align: top;")]//text()').extract()
+        ability_header_raw = response.xpath('//*[(@id = "mw-content-text")]//div//div//div[contains(@style, "display: '
+                                            'inline-block; width: 32%; vertical-align: top;")]//text()').extract()
+
+        while ' ' in ability_header_raw:
+            ability_header_raw.remove(' ')
+        index = 0
+        ability_header = []
+
+        while index < len(ability_header_raw):
+            if ability_header_raw[index] == '(':
+                index += 1
+                while True:
+                    if ability_header_raw[index] == ')':
+                        index += 1
+                        break
+                    index += 1
+            ability_header.append(ability_header_raw[index])
+            index += 1
+
+        print(ability_header)
 
         cooldown = response.xpath('//*[(@id = "mw-content-text")]//div//div//div//span[contains(@style, "position:relative; top:-2px;")]/text()').extract()
 
