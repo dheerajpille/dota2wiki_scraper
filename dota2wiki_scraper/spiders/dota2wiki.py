@@ -61,7 +61,6 @@ class Dota2wikiSpider(scrapy.Spider):
 
         while '\n' in ability_ult:
             ability_ult.remove('\n')
-
         # TODO: figure out cast animation + backswing
         ability_key = response.xpath('//*[(@id = "mw-content-text")]//div//div//div//b//text()').extract()
 
@@ -69,16 +68,24 @@ class Dota2wikiSpider(scrapy.Spider):
 
         while ' ' in ability_value:
             ability_value.remove(' ')
-
         index = 0
         ability_value_data = []
 
-        print(ability_value)
+        topval = response.xpath('//*[(@id = "mw-content-text")]//div//div//div[contains(@style, "display: inline-block; width: 32%; vertical-align: top;")]//text()').extract()
+        print(topval)
+        keys_raw = response.xpath('//*[(@id = "mw-content-text")]//div//div//div//b/text()').extract()
 
+        # TODO: remove values in brackets
+        values_raw = response.xpath('//*[(@id = "mw-content-text")]//div//div//div//span[contains(@style, '
+                                    '"white-space: nowrap")]/text()').extract()
 
-        tooltip_raw = response.xpath('//*[(@id = "mw-content-text")]//div//div//div//span[contains(@id, "tooltip")]//text()').extract()
+        print(keys_raw)
 
-        tooltip_data = [num for num in tooltip_raw if num.replace('.', '', 1).isdigit()]
+        # Gets cast animations (if applicable)
+        tooltip_raw = response.xpath('//*[(@id = "mw-content-text")]//div//div//div//span[contains(@id, "tooltip")]'
+                                     '//text()').extract()
+
+        tooltip_data = [n for n in tooltip_raw if n.replace('.', '', 1).isdigit()]
 
         index = 0
         tooltip = []
@@ -87,7 +94,7 @@ class Dota2wikiSpider(scrapy.Spider):
             if index % 2 == 1:
                 tooltip.append(tooltip_data[index-1] + "+" + tooltip_data[index])
             index += 1
-        print(tooltip)
+
 
     def parse_title(self, response):
 
