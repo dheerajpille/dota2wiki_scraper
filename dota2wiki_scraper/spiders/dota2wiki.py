@@ -33,7 +33,7 @@ class Dota2wikiSpider(scrapy.Spider):
 
         # TODO: figure out cast animation + backswing
         # TODO: Modifiers is end of ability, Ability is beginning of next ability
-        ability_key = response.xpath('//*[(@id = "mw-content-text")]//div//div//div//b//text()').extract()
+        ability_keys_raw = response.xpath('//*[(@id = "mw-content-text")]//div//div//div//b//text()').extract()
 
         ability_values_raw = response.xpath('//*[(@id = "mw-content-text")]//div//div//div//span/text()').extract()
 
@@ -67,22 +67,25 @@ class Dota2wikiSpider(scrapy.Spider):
             ability_header_raw.remove(' ')
 
         index = 0
-        ability_header = []
+        ability_header_clean = []
 
+        # Cleans ability header list
         while index < len(ability_header_raw):
+            # Appends multiple type values separated by '/' together
             if ability_header_raw[index].strip() == '/':
-                ability_header.pop()
-                ability_header.append(ability_header_raw[index-1].strip() + ' ' +
-                                      ability_header_raw[index].strip() + ' ' +
-                                      ability_header_raw[index+1].strip())
+                ability_header_clean.pop()
+                ability_header_clean.append(ability_header_raw[index-1].strip() + ' ' +
+                                            ability_header_raw[index].strip() + ' ' +
+                                            ability_header_raw[index+1].strip())
                 index += 2
             elif ability_header_raw[index].strip()[-1] == '/':
-                ability_header.append(ability_header_raw[index] + ability_header_raw[index+1])
+                ability_header_clean.append(ability_header_raw[index] + ability_header_raw[index+1])
                 index += 2
             elif ability_header_raw[index].strip()[0] == '/':
-                ability_header.pop()
-                ability_header.append(ability_header_raw[index-1] + ability_header_raw[index])
+                ability_header_clean.pop()
+                ability_header_clean.append(ability_header_raw[index-1] + ability_header_raw[index])
                 index += 1
+            # Removes values inside brackets from list
             elif ability_header_raw[index] == '(':
                 index += 1
                 while True:
@@ -91,36 +94,43 @@ class Dota2wikiSpider(scrapy.Spider):
                         break
                     index += 1
             if index < len(ability_header_raw):
-                ability_header.append(ability_header_raw[index].strip())
+                ability_header_clean.append(ability_header_raw[index].strip())
             index += 1
 
         index = 0
 
-        ability_table = PrettyTable(['Ability Name', ability[index]])
-
-        # TODO: redo this to not rely on makeshift index value
-        while True:
-            if ability_header[index] == "Ability" and index != 0:
-                break
-            else:
-                ability_table.add_row([ability_header[index], ability_header[index + 1]])
-                index += 2
-
         ability_header_data = []
 
-        ability_indices = [item for item in range(len(ability_header)) if ability_header[item] == "Ability"]
+        # Ability header indices, used to slice lists to sub-lists
+        ability_indices = [item for item in range(len(ability_header_clean)) if ability_header_clean[item] == "Ability"]
+
+        # Slices ability header list using indices provided above
+        for i in range(len(ability_indices)):
+            if i != len(ability_indices)-1:
+                ability_header_data.append(ability_header_clean[ability_indices[i]:ability_indices[i+1]])
+            else:
+                ability_header_data.append(ability_header_clean[ability_indices[i]:])
+
+        ability_indices = [item for item in range(len(ability_keys_raw)) if ability_keys_raw[item] == "Ability"]
+        modifier_indices = [item for item in range(len(ability_keys_raw)) if ability_keys_raw[item] == "Modifiers"]
+
+        ability_keys_data = []
 
         for i in range(len(ability_indices)):
             if i != len(ability_indices)-1:
-                ability_header_data.append(ability_header[ability_indices[i]:ability_indices[i+1]])
+                ability_keys_data.append(ability_keys_raw[ability_indices[i]:ability_indices[i+1]])
             else:
-                ability_header_data.append(ability_header[ability_indices[i]:])
+                ability_keys_data.append(ability_keys_raw[ability_indices[i]:])
 
-        print(ability_header_data)
+        for i in range(len(ability_keys_data)):
+            if "Modifiers" in ability_keys_data[i]:
+                ability_keys_data[i] = ability_keys_data[i][:ability_keys_data[i].index("Modifiers")-1]
+
+        print(ability_keys_data)
 
         # TODO: use del_row(int) to delete row from PrettyTable
-        print(ability_table)
-        print(ability_key)
+        ability_table = PrettyTable(['Ability Name', ability[index]])
+        print(ability_values)
 
     def parse_title(self, response):
 
