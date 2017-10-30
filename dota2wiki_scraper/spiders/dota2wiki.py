@@ -136,16 +136,17 @@ class Dota2wikiSpider(scrapy.Spider):
             if "Modifiers" in ability_keys_data[i]:
                 ability_keys_data[i] = ability_keys_data[i][:ability_keys_data[i].index("Modifiers")-1]
 
-        print(ability_keys_data)
-
         value_index = 0
 
         # TODO: use del_row(int) to delete row from PrettyTable
         ability_table = PrettyTable(['Ability Name', ability[index]])
 
         while True:
-            print(ability_header_data[index])
-            print(ability_keys_data[index])
+            for i in range(int(len(ability_header_data[index])/2)):
+                ability_table.add_row([ability_header_data[index][i*2], ability_header_data[index][i*2+1]])
+            for i in range(len(ability_keys_data[index])):
+                ability_table.add_row([ability_keys_data[index][i], ability_values[value_index]])
+                value_index += 1
             break
 
         print(ability_table)
