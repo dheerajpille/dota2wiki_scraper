@@ -14,39 +14,6 @@ class Dota2wikiSpider(scrapy.Spider):
         self.start_urls = ['https://dota2.gamepedia.com/%s' % kwargs.get('hero')]
 
     def parse(self, response):
-
-        talent_table = PrettyTable(['Talent 1', 'Level', 'Talent 2'])
-
-        # Talent tree XPath
-        talent_raw = response.xpath('//*[contains(concat( " ", @class, " " ), concat( " ", "wikitable", " " ))]'
-                                    '//td//text()').extract()
-
-        # Removes extra spaces generated in space of images/icons
-        while ' ' in talent_raw:
-            talent_raw.remove(' ')
-
-        # Indices and list for talent_table data
-        start = 0
-        end = 0
-        talent_list = []
-
-        # Appends items which do not end with newline character for talent_table formatting
-        for x in talent_raw:
-            end += 1
-            if x[-1:] == '\n':
-                talent_list.append(''.join(talent_raw[start:end]))
-                start = end
-
-        # Level and talent_list index for talent_table
-        level = 25
-        index = 0
-
-        # Adds talent_list data to talent_table
-        while level >= 10:
-            talent_table.add_row([talent_list[index], level, talent_list[index+1]])
-            level -= 5
-            index += 2
-
         # TODO: do span and b for values
         ability_normal = response.xpath('//*[(@id = "mw-content-text")]//div//div//div[contains(@style, "font-weight: '
                                         'bold; font-size: 110%; border-bottom: 1px solid black; background-color: '
@@ -61,25 +28,47 @@ class Dota2wikiSpider(scrapy.Spider):
 
         while '\n' in ability_ult:
             ability_ult.remove('\n')
+
         # TODO: figure out cast animation + backswing
         ability_key = response.xpath('//*[(@id = "mw-content-text")]//div//div//div//b//text()').extract()
 
-        ability_value = response.xpath('//*[(@id = "mw-content-text")]//div//div//div//span/text()').extract()
+        ability_values_raw = response.xpath('//*[(@id = "mw-content-text")]//div//div//div//span/text()').extract()
 
-        while ' ' in ability_value:
-            ability_value.remove(' ')
+        while ' ' in ability_values_raw:
+            ability_values_raw.remove(' ')
+
         index = 0
-        ability_value_data = []
+        ability_values = []
 
-        topval = response.xpath('//*[(@id = "mw-content-text")]//div//div//div[contains(@style, "display: inline-block; width: 32%; vertical-align: top;")]//text()').extract()
-        print(topval)
+        # Removes brackets (AGHS/TALENT MODIFIERS) from ability values
+        while index < len(ability_values_raw):
+            if ability_values_raw[index][-1] == '(':
+                ability_values.append(ability_values_raw[index][:-1])
+                index += 1
+                while True:
+                    if ability_values_raw[index][-1] == ')':
+                        break
+                    index += 1
+                index += 1
+            else:
+                ability_values.append(ability_values_raw[index])
+                index += 1
+
+        print(ability_values)
+
+
+        # Ability, Affects, and Damage values found in ability header
+        header_values = response.xpath('//*[(@id = "mw-content-text")]//div//div//div[contains(@style, '
+                                       '"display: inline-block; width: 32%; vertical-align: top;")]//text()').extract()
+
+        cooldown = response.xpath('//*[(@id = "mw-content-text")]//div//div//div//span[contains(@style, "position:relative; top:-2px;")]/text()').extract()
+
+
         keys_raw = response.xpath('//*[(@id = "mw-content-text")]//div//div//div//b/text()').extract()
 
         # TODO: remove values in brackets
         values_raw = response.xpath('//*[(@id = "mw-content-text")]//div//div//div//span[contains(@style, '
                                     '"white-space: nowrap")]/text()').extract()
-
-        print(keys_raw)
 
         # Gets cast animations (if applicable)
         tooltip_raw = response.xpath('//*[(@id = "mw-content-text")]//div//div//div//span[contains(@id, "tooltip")]'
@@ -94,7 +83,6 @@ class Dota2wikiSpider(scrapy.Spider):
             if index % 2 == 1:
                 tooltip.append(tooltip_data[index-1] + "+" + tooltip_data[index])
             index += 1
-
 
     def parse_title(self, response):
 
