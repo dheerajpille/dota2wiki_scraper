@@ -36,8 +36,6 @@ class Dota2wikiSpider(scrapy.Spider):
 
         ability_table = PrettyTable(['Ability', ability[0]])
 
-        print(ability_key)
-
         ability_values_raw = response.xpath('//*[(@id = "mw-content-text")]//div//div//div//span/text()').extract()
 
         while ' ' in ability_values_raw:
@@ -56,13 +54,11 @@ class Dota2wikiSpider(scrapy.Spider):
                         break
                     index += 1
             elif ability_values_raw[index][0].isdigit():
-                ability_values.append(ability_values_raw[index])
+                ability_values.append(ability_values_raw[index].strip())
             index += 1
 
         # Removes all None values in list
         ability_values = list(filter(None, ability_values))
-
-        print(ability_values)
 
         # Ability, Affects, and Damage values found in ability header
         ability_header_raw = response.xpath('//*[(@id = "mw-content-text")]//div//div//div[contains(@style, "display: '
@@ -70,21 +66,36 @@ class Dota2wikiSpider(scrapy.Spider):
 
         while ' ' in ability_header_raw:
             ability_header_raw.remove(' ')
+
         index = 0
         ability_header = []
 
         while index < len(ability_header_raw):
-            if ability_header_raw[index] == '(':
+            if ability_header_raw[index].strip() == '/':
+                ability_header.pop()
+                ability_header.append(ability_header_raw[index-1].strip() +
+                                      ability_header_raw[index].strip() +
+                                      ability_header_raw[index+1].strip())
+                index += 2
+            elif ability_header_raw[index] == '(':
                 index += 1
                 while True:
                     if ability_header_raw[index] == ')':
                         index += 1
                         break
                     index += 1
-            ability_header.append(ability_header_raw[index])
+            ability_header.append(ability_header_raw[index].strip())
             index += 1
 
+        index = 0
+
         print(ability_header)
+
+        while index < len(ability_header):
+            ability_table.add_row([ability_header[index], ability_header[index+1]])
+            index += 2
+
+        print(ability_table)
 
         cooldown = response.xpath('//*[(@id = "mw-content-text")]//div//div//div//span[contains(@style, "position:relative; top:-2px;")]/text()').extract()
 
