@@ -124,15 +124,30 @@ class Dota2wikiSpider(scrapy.Spider):
             else:
                 ability_keys_data.append(ability_keys_raw[ability_indices[i]:])
 
-        # Removes modifiers from sub-lists if applicable
+        # Removes ability headers and modifiers from sub-lists if applicable
         for i in range(len(ability_keys_data)):
+            if "Ability" in ability_keys_data[i]:
+                ability_keys_data[i].remove("Ability")
+            if "Affects" in ability_keys_data[i]:
+                ability_keys_data[i].remove("Affects")
+            if "Damage" in ability_keys_data[i]:
+                ability_keys_data[i].remove(ability_keys_data[i][ability_keys_data[i].index("Damage")+1])
+                ability_keys_data[i].remove("Damage")
             if "Modifiers" in ability_keys_data[i]:
                 ability_keys_data[i] = ability_keys_data[i][:ability_keys_data[i].index("Modifiers")-1]
 
         print(ability_keys_data)
 
+        value_index = 0
+
         # TODO: use del_row(int) to delete row from PrettyTable
         ability_table = PrettyTable(['Ability Name', ability[index]])
+
+        while True:
+            print(ability_header_data[index])
+            print(ability_keys_data[index])
+            break
+
         print(ability_table)
         print(ability_values)
 
