@@ -32,6 +32,8 @@ class Dota2wikiSpider(scrapy.Spider):
         # TODO: figure out cast animation + backswing
         ability_key = response.xpath('//*[(@id = "mw-content-text")]//div//div//div//b//text()').extract()
 
+        table = values
+
         ability_values_raw = response.xpath('//*[(@id = "mw-content-text")]//div//div//div//span/text()').extract()
 
         while ' ' in ability_values_raw:
@@ -40,7 +42,7 @@ class Dota2wikiSpider(scrapy.Spider):
         index = 0
         ability_values = []
 
-        # Removes brackets (AGHS/TALENT MODIFIERS) from ability values
+        # Removes brackets (AGHANIM'S/TALENT MODIFIERS) and keys from ability values
         while index < len(ability_values_raw):
             if ability_values_raw[index][-1] == '(':
                 ability_values.append(ability_values_raw[index][:-1])
@@ -49,10 +51,12 @@ class Dota2wikiSpider(scrapy.Spider):
                     if ability_values_raw[index][-1] == ')':
                         break
                     index += 1
-                index += 1
-            else:
+            elif ability_values_raw[index][0].isdigit():
                 ability_values.append(ability_values_raw[index])
-                index += 1
+            index += 1
+
+        # Removes all None values in list
+        ability_values = list(filter(None, ability_values))
 
         print(ability_values)
 
