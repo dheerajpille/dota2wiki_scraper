@@ -29,6 +29,7 @@ class Dota2wikiSpider(scrapy.Spider):
         while '\n' in ability_ult:
             ability_ult.remove('\n')
 
+        # Combines normal and ultimate abilities
         ability = ability_normal + ability_ult
 
         # TODO: figure out cast animation + backswing
@@ -101,7 +102,7 @@ class Dota2wikiSpider(scrapy.Spider):
 
         ability_header_data = []
 
-        # Ability header indices, used to slice lists to sub-lists
+        # Ability header indices, used to slice list to sub-lists
         ability_indices = [item for item in range(len(ability_header_clean)) if ability_header_clean[item] == "Ability"]
 
         # Slices ability header list using indices provided above
@@ -111,17 +112,19 @@ class Dota2wikiSpider(scrapy.Spider):
             else:
                 ability_header_data.append(ability_header_clean[ability_indices[i]:])
 
+        # Ability key indices, used to slice list to sub-lists
         ability_indices = [item for item in range(len(ability_keys_raw)) if ability_keys_raw[item] == "Ability"]
-        modifier_indices = [item for item in range(len(ability_keys_raw)) if ability_keys_raw[item] == "Modifiers"]
 
         ability_keys_data = []
 
+        # Slices ability key list using indices provided above
         for i in range(len(ability_indices)):
             if i != len(ability_indices)-1:
                 ability_keys_data.append(ability_keys_raw[ability_indices[i]:ability_indices[i+1]])
             else:
                 ability_keys_data.append(ability_keys_raw[ability_indices[i]:])
 
+        # Removes modifiers from sub-lists if applicable
         for i in range(len(ability_keys_data)):
             if "Modifiers" in ability_keys_data[i]:
                 ability_keys_data[i] = ability_keys_data[i][:ability_keys_data[i].index("Modifiers")-1]
@@ -130,6 +133,7 @@ class Dota2wikiSpider(scrapy.Spider):
 
         # TODO: use del_row(int) to delete row from PrettyTable
         ability_table = PrettyTable(['Ability Name', ability[index]])
+        print(ability_table)
         print(ability_values)
 
     def parse_title(self, response):
