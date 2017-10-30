@@ -80,6 +80,10 @@ class Dota2wikiSpider(scrapy.Spider):
             elif ability_header_raw[index].strip()[-1] == '/':
                 ability_header.append(ability_header_raw[index] + ability_header_raw[index+1])
                 index += 2
+            elif ability_header_raw[index].strip()[0] == '/':
+                ability_header.pop()
+                ability_header.append(ability_header_raw[index-1] + ability_header_raw[index])
+                index += 1
             elif ability_header_raw[index] == '(':
                 index += 1
                 while True:
@@ -87,12 +91,13 @@ class Dota2wikiSpider(scrapy.Spider):
                         index += 1
                         break
                     index += 1
-            ability_header.append(ability_header_raw[index].strip())
+            if index < len(ability_header_raw):
+                ability_header.append(ability_header_raw[index].strip())
             index += 1
 
-        index = 0
-
         print(ability_header)
+
+        index = 0
 
         while index < len(ability_header):
             ability_table.add_row([ability_header[index], ability_header[index+1]])
@@ -101,7 +106,6 @@ class Dota2wikiSpider(scrapy.Spider):
         print(ability_table)
 
         cooldown = response.xpath('//*[(@id = "mw-content-text")]//div//div//div//span[contains(@style, "position:relative; top:-2px;")]/text()').extract()
-
 
         keys_raw = response.xpath('//*[(@id = "mw-content-text")]//div//div//div//b/text()').extract()
 
