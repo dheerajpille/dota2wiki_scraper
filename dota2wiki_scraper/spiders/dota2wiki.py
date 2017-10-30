@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-import re
 import scrapy
 
 from prettytable import PrettyTable
@@ -32,8 +31,6 @@ class Dota2wikiSpider(scrapy.Spider):
         # Combines normal and ultimate abilities
         ability = ability_normal + ability_ult
 
-        # TODO: figure out cast animation + backswing
-        # TODO: Modifiers is end of ability, Ability is beginning of next ability
         ability_keys_raw = response.xpath('//*[(@id = "mw-content-text")]//div//div//div//b//text()').extract()
 
         ability_values_raw = response.xpath('//*[(@id = "mw-content-text")]//div//div//div//span/text()').extract()
@@ -136,7 +133,7 @@ class Dota2wikiSpider(scrapy.Spider):
             if "Modifiers" in ability_keys_data[i]:
                 ability_keys_data[i] = ability_keys_data[i][:ability_keys_data[i].index("Modifiers")-1]
 
-        # TODO: use del_row(int) to delete row from PrettyTable
+        # Index iterator through ability values list
         value_index = 0
 
         for i in range(len(ability)):
@@ -148,16 +145,18 @@ class Dota2wikiSpider(scrapy.Spider):
 
             for j in range(len(ability_keys_data[i])):
                 if ability_keys_data[i][j] == "Cast Animation":
-                    ability_table.add_row([ability_keys_data[i][j], ability_values[value_index] + '+' +
-                                           ability_values[value_index+1]])
+                    ability_table.add_row([ability_keys_data[i][j].strip(), ability_values[value_index].strip() + '+' +
+                                           ability_values[value_index+1].strip()])
                     value_index += 2
                 else:
-                    ability_table.add_row([ability_keys_data[i][j], ability_values[value_index]])
+                    ability_table.add_row([ability_keys_data[i][j].strip(), ability_values[value_index].strip()])
                     value_index += 1
 
             print(ability_table)
             ability_table.clear_rows()
 
+        cooldown = response.xpath('[')
+        # TODO: add cooldown/mana cost where applicable
 
     def parse_title(self, response):
 
