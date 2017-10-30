@@ -33,7 +33,8 @@ class Dota2wikiSpider(scrapy.Spider):
 
         ability_keys_raw = response.xpath('//*[(@id = "mw-content-text")]//div//div//div//b//text()').extract()
 
-        ability_values_raw = response.xpath('//*[(@id = "mw-content-text")]//div//div//div//span/text()').extract()
+        # TODO: used to be /text() instead of //text()
+        ability_values_raw = response.xpath('//*[(@id = "mw-content-text")]//div//div//div//span//text()').extract()
 
         while ' ' in ability_values_raw:
             ability_values_raw.remove(' ')
@@ -131,7 +132,7 @@ class Dota2wikiSpider(scrapy.Spider):
                 ability_keys_data[i].remove(ability_keys_data[i][ability_keys_data[i].index("Damage")+1])
                 ability_keys_data[i].remove("Damage")
             if "Modifiers" in ability_keys_data[i]:
-                ability_keys_data[i] = ability_keys_data[i][:ability_keys_data[i].index("Modifiers")-1]
+                ability_keys_data[i] = ability_keys_data[i][:ability_keys_data[i].index("Modifiers")]
 
         # Index iterator through ability values list
         value_index = 0
@@ -141,7 +142,7 @@ class Dota2wikiSpider(scrapy.Spider):
             ability_table = PrettyTable(['Ability Name', ability[i]])
 
             for j in range(int(len(ability_header_data[i])/2)):
-                ability_table.add_row([ability_header_data[i][j*2], ability_header_data[i][j*2+1]])
+                ability_table.add_row([ability_header_data[i][j*2].strip(), ability_header_data[i][j*2+1].strip()])
 
             for j in range(len(ability_keys_data[i])):
                 if ability_keys_data[i][j] == "Cast Animation":
@@ -155,7 +156,6 @@ class Dota2wikiSpider(scrapy.Spider):
             print(ability_table)
             ability_table.clear_rows()
 
-        cooldown = response.xpath('[')
         # TODO: add cooldown/mana cost where applicable
 
     def parse_title(self, response):
@@ -275,7 +275,7 @@ class Dota2wikiSpider(scrapy.Spider):
 
     def parse_talent(self, response):
 
-        talent_table = PrettyTable(['Talent 1', 'Level', 'Talent 2'])
+        talent_table = PrettyTable(['Talent Left', 'Level', 'Talent Right'])
 
         # Talent tree XPath
         talent_raw = response.xpath('//*[contains(concat( " ", @class, " " ), concat( " ", "wikitable", " " ))]'
