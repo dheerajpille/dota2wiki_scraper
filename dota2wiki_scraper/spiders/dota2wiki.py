@@ -34,7 +34,7 @@ class Dota2wikiSpider(scrapy.Spider):
         # TODO: figure out cast animation + backswing
         ability_key = response.xpath('//*[(@id = "mw-content-text")]//div//div//div//b//text()').extract()
 
-        ability_table = PrettyTable(['Ability', ability[0]])
+        ability_table = PrettyTable(['Ability Name', ability[0]])
 
         ability_values_raw = response.xpath('//*[(@id = "mw-content-text")]//div//div//div//span/text()').extract()
 
@@ -73,9 +73,12 @@ class Dota2wikiSpider(scrapy.Spider):
         while index < len(ability_header_raw):
             if ability_header_raw[index].strip() == '/':
                 ability_header.pop()
-                ability_header.append(ability_header_raw[index-1].strip() +
-                                      ability_header_raw[index].strip() +
+                ability_header.append(ability_header_raw[index-1].strip() + ' ' +
+                                      ability_header_raw[index].strip() + ' ' +
                                       ability_header_raw[index+1].strip())
+                index += 2
+            elif ability_header_raw[index].strip()[-1] == '/':
+                ability_header.append(ability_header_raw[index] + ability_header_raw[index+1])
                 index += 2
             elif ability_header_raw[index] == '(':
                 index += 1
