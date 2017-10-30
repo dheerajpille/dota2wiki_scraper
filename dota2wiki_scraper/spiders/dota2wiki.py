@@ -32,9 +32,8 @@ class Dota2wikiSpider(scrapy.Spider):
         ability = ability_normal + ability_ult
 
         # TODO: figure out cast animation + backswing
+        # TODO: Modifiers is end of ability, Ability is beginning of next ability
         ability_key = response.xpath('//*[(@id = "mw-content-text")]//div//div//div//b//text()').extract()
-
-        ability_table = PrettyTable(['Ability Name', ability[0]])
 
         ability_values_raw = response.xpath('//*[(@id = "mw-content-text")]//div//div//div//span/text()').extract()
 
@@ -95,37 +94,33 @@ class Dota2wikiSpider(scrapy.Spider):
                 ability_header.append(ability_header_raw[index].strip())
             index += 1
 
-        print(ability_header)
-
         index = 0
 
-        while index < len(ability_header):
-            ability_table.add_row([ability_header[index], ability_header[index+1]])
-            index += 2
+        ability_table = PrettyTable(['Ability Name', ability[index]])
 
+        # TODO: redo this to not rely on makeshift index value
+        while True:
+            if ability_header[index] == "Ability" and index != 0:
+                break
+            else:
+                ability_table.add_row([ability_header[index], ability_header[index + 1]])
+                index += 2
+
+        ability_header_data = []
+
+        ability_indices = [item for item in range(len(ability_header)) if ability_header[item] == "Ability"]
+
+        for i in range(len(ability_indices)):
+            if i != len(ability_indices)-1:
+                ability_header_data.append(ability_header[ability_indices[i]:ability_indices[i+1]])
+            else:
+                ability_header_data.append(ability_header[ability_indices[i]:])
+
+        print(ability_header_data)
+
+        # TODO: use del_row(int) to delete row from PrettyTable
         print(ability_table)
-
-        cooldown = response.xpath('//*[(@id = "mw-content-text")]//div//div//div//span[contains(@style, "position:relative; top:-2px;")]/text()').extract()
-
-        keys_raw = response.xpath('//*[(@id = "mw-content-text")]//div//div//div//b/text()').extract()
-
-        # TODO: remove values in brackets
-        values_raw = response.xpath('//*[(@id = "mw-content-text")]//div//div//div//span[contains(@style, '
-                                    '"white-space: nowrap")]/text()').extract()
-
-        # Gets cast animations (if applicable)
-        tooltip_raw = response.xpath('//*[(@id = "mw-content-text")]//div//div//div//span[contains(@id, "tooltip")]'
-                                     '//text()').extract()
-
-        tooltip_data = [n for n in tooltip_raw if n.replace('.', '', 1).isdigit()]
-
-        index = 0
-        tooltip = []
-
-        while index < len(tooltip_data):
-            if index % 2 == 1:
-                tooltip.append(tooltip_data[index-1] + "+" + tooltip_data[index])
-            index += 1
+        print(ability_key)
 
     def parse_title(self, response):
 
