@@ -84,8 +84,30 @@ class Dota2wikiSpider(scrapy.Spider):
 
         for i in range(len(mana_raw)):
             mana_raw[i] = mana_raw[i].strip('\n')
-        mana = response.xpath('//*[(@id = "mw-content-text")]//div//div//div//div//text()').extract()
-        print(mana)
+
+        cd_mana_raw = response.xpath('//*[(@id = "mw-content-text")]//div//div//div//div//text()').extract()
+
+        for i in range(len(cd_mana_raw)):
+            cd_mana_raw[i] = "".join(cd_mana_raw[i].split())
+
+        while '' in cd_mana_raw:
+            cd_mana_raw.remove('')
+
+        index = 0
+        cd_mana_clean = []
+
+        while index < len(cd_mana_raw):
+            if cd_mana_raw[index][-1] == '(':
+                while True:
+                    index += 1
+                    if cd_mana_raw[index][-1] == ')':
+                        index += 1
+                        break
+            else:
+                cd_mana_clean.append(cd_mana_raw[index])
+                index += 1
+
+        print(cd_mana_clean)
 
         # Ability, Affects, and Damage values found in ability header
         ability_header_raw = response.xpath('//*[(@id = "mw-content-text")]//div//div//div[contains(@style, "display: '
