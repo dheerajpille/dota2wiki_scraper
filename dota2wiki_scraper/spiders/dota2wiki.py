@@ -13,7 +13,8 @@ class Dota2wikiSpider(scrapy.Spider):
         self.start_urls = ['https://dota2.gamepedia.com/%s' % kwargs.get('hero')]
 
     def parse(self, response):
-        # TODO: do span and b for values
+
+        # Normal abilities
         ability_normal = response.xpath('//*[(@id = "mw-content-text")]//div//div//div[contains(@style, "font-weight: '
                                         'bold; font-size: 110%; border-bottom: 1px solid black; background-color: '
                                         '#B44335; color: white; padding: 3px 5px;")]/text()').extract()
@@ -21,6 +22,7 @@ class Dota2wikiSpider(scrapy.Spider):
         while '\n' in ability_normal:
             ability_normal.remove('\n')
 
+        # Ultimate ability
         ability_ult = response.xpath('//*[(@id = "mw-content-text")]//div//div//div[contains(@style, "font-weight: '
                                      'bold; font-size: 110%; border-bottom: 1px solid black; background-color: '
                                      '#414141; color: white; padding: 3px 5px;")]/text()').extract()
@@ -30,18 +32,11 @@ class Dota2wikiSpider(scrapy.Spider):
 
         # Combines normal and ultimate abilities
         ability = ability_normal + ability_ult
-
+        print(ability)
         ability_keys_raw = response.xpath('//*[(@id = "mw-content-text")]//div//div//div//b//text()').extract()
 
         # TODO: used to be /text() instead of //text()
         ability_values_raw = response.xpath('//*[(@id = "mw-content-text")]//div//div//div//span//text()').extract()
-
-        # Cooldown
-        cd = response.xpath('//*[(@id = "mw-content-text")]//div//div//div[contains(@style, "display:inline-block; '
-                            'margin:8px 0px 0px 50px; width:190px; vertical-align:top;")]/text() | '
-                            '//*[(@id = "mw-content-text")]//div//div//div[contains(@style, "display:inline-block; '
-                            'margin:8px 0px 0px 50px; width:370px; vertical-align:top;")]/text()').extract()
-        print(cd)
 
         while ' ' in ability_values_raw:
             ability_values_raw.remove(' ')
@@ -65,7 +60,28 @@ class Dota2wikiSpider(scrapy.Spider):
         # Removes all None values in list
         ability_values = list(filter(None, ability_values))
 
-        print(ability_values)
+        # Cooldown for all abilities
+        cooldown_raw = response.xpath('//*[(@id = "mw-content-text")]//div//div//div[contains(@style, "display:'
+                                      'inline-block; margin:8px 0px 0px 50px; width:190px; vertical-align:top;")]'
+                                      '/text() | '
+                                      '//*[(@id = "mw-content-text")]//div//div//div[contains(@style, "display:'
+                                      'inline-block; margin:8px 0px 0px 50px; width:370px; vertical-align:top;")]'
+                                      '/text()').extract()
+
+        index = 0
+        cooldown_data = []
+
+        while index < len(cooldown_raw):
+            cooldown_list = []
+            while cooldown_raw[index][-1] == '/':
+                cooldown_list.append(cooldown_raw[index])
+                index += 1
+            cooldown_list.append(cooldown_raw[index])
+            cooldown_data.append(''.join(cooldown_list))
+            index += 1
+
+        print(cooldown_data)
+
         # Ability, Affects, and Damage values found in ability header
         ability_header_raw = response.xpath('//*[(@id = "mw-content-text")]//div//div//div[contains(@style, "display: '
                                             'inline-block; width: 32%; vertical-align: top;")]//text()').extract()
