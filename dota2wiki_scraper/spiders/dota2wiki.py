@@ -53,7 +53,7 @@ class Dota2wikiSpider(scrapy.Spider):
                     if ability_values_raw[index][-1] == ')':
                         break
                     index += 1
-            elif ability_values_raw[index][0].isdigit():
+            elif ability_values_raw[index][0].isdigit() or "Global" in ability_values_raw[index]:
                 ability_values.append(ability_values_raw[index].strip())
             index += 1
 
@@ -80,7 +80,9 @@ class Dota2wikiSpider(scrapy.Spider):
             cooldown_data.append(''.join(cooldown_list))
             index += 1
 
-        mana_raw = response.xpath('//*[(@id = "mw-content-text")]//div//div//div[contains(@style, "display:inline-block; margin:8px 0px 0px; width:190px; vertical-align:top;")]/text()').extract()
+        mana_raw = response.xpath('//*[(@id = "mw-content-text")]//div//div//div[contains(@style, "display:'
+                                  'inline-block; margin:8px 0px 0px; width:190px; vertical-align:top;")]'
+                                  '/text()').extract()
 
         for i in range(len(mana_raw)):
             mana_raw[i] = mana_raw[i].strip('\n')
@@ -92,6 +94,9 @@ class Dota2wikiSpider(scrapy.Spider):
 
         while '' in cd_mana_raw:
             cd_mana_raw.remove('')
+
+        while 'Play' in cd_mana_raw:
+            cd_mana_raw.remove('Play')
 
         index = 0
         cd_mana_clean = []
@@ -205,8 +210,9 @@ class Dota2wikiSpider(scrapy.Spider):
                     value_index += 1
 
             # Check for cooldown_length with passives using passive boolean
-            ability_table.add_row(['Cooldown', cooldown_data[i]])
+            #ability_table.add_row(['Cooldown', cooldown_data[i]])
 
+            print(ability_table)
             ability_table.clear_rows()
 
         # TODO: add cooldown/mana cost where applicable
