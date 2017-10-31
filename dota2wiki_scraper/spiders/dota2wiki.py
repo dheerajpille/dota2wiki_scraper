@@ -112,7 +112,7 @@ class Dota2wikiSpider(scrapy.Spider):
                 cd_mana_clean.append(cd_mana_raw[index])
                 index += 1
 
-        print(cd_mana_clean)
+        #print(cd_mana_clean)
 
         # Ability, Affects, and Damage values found in ability header
         ability_header_raw = response.xpath('//*[(@id = "mw-content-text")]//div//div//div[contains(@style, "display: '
@@ -185,10 +185,20 @@ class Dota2wikiSpider(scrapy.Spider):
             if "Affects" in ability_keys_data[i]:
                 ability_keys_data[i].remove("Affects")
             if "Damage" in ability_keys_data[i]:
-                ability_keys_data[i].remove(ability_keys_data[i][ability_keys_data[i].index("Damage")+1])
+                if ability_keys_data[i][ability_keys_data[i].index("Damage") + 2] == "Physical" or \
+                                ability_keys_data[i][ability_keys_data[i].index("Damage") + 2] == "Magical" or \
+                                ability_keys_data[i][ability_keys_data[i].index("Damage") + 2] == "Pure":
+                    ability_keys_data[i].remove(ability_keys_data[i][ability_keys_data[i].index("Damage")+2])
+                    ability_keys_data[i].remove(ability_keys_data[i][ability_keys_data[i].index("Damage")+1])
+                elif ability_keys_data[i][ability_keys_data[i].index("Damage") + 1] == "Physical" or \
+                                ability_keys_data[i][ability_keys_data[i].index("Damage") + 1] == "Magical" or \
+                                ability_keys_data[i][ability_keys_data[i].index("Damage") + 1] == "Pure":
+                    ability_keys_data[i].remove(ability_keys_data[i][ability_keys_data[i].index("Damage")+1])
                 ability_keys_data[i].remove("Damage")
             if "Modifiers" in ability_keys_data[i]:
                 ability_keys_data[i] = ability_keys_data[i][:ability_keys_data[i].index("Modifiers")]
+
+        print(ability_keys_data)
 
         # Index iterator through ability values list
         value_index = 0
