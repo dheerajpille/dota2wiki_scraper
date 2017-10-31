@@ -32,7 +32,7 @@ class Dota2wikiSpider(scrapy.Spider):
 
         # Combines normal and ultimate abilities
         ability = ability_normal + ability_ult
-        print(ability)
+
         ability_keys_raw = response.xpath('//*[(@id = "mw-content-text")]//div//div//div//b//text()').extract()
 
         # TODO: used to be /text() instead of //text()
@@ -80,7 +80,12 @@ class Dota2wikiSpider(scrapy.Spider):
             cooldown_data.append(''.join(cooldown_list))
             index += 1
 
-        print(cooldown_data)
+        mana_raw = response.xpath('//*[(@id = "mw-content-text")]//div//div//div[contains(@style, "display:inline-block; margin:8px 0px 0px; width:190px; vertical-align:top;")]/text()').extract()
+
+        for i in range(len(mana_raw)):
+            mana_raw[i] = mana_raw[i].strip('\n')
+        mana = response.xpath('//*[(@id = "mw-content-text")]//div//div//div//div//text()').extract()
+        print(mana)
 
         # Ability, Affects, and Damage values found in ability header
         ability_header_raw = response.xpath('//*[(@id = "mw-content-text")]//div//div//div[contains(@style, "display: '
@@ -177,7 +182,9 @@ class Dota2wikiSpider(scrapy.Spider):
                     ability_table.add_row([ability_keys_data[i][j].strip(), ability_values[value_index].strip()])
                     value_index += 1
 
-            #print(ability_table)
+            # Check for cooldown_length with passives using passive boolean
+            ability_table.add_row(['Cooldown', cooldown_data[i]])
+
             ability_table.clear_rows()
 
         # TODO: add cooldown/mana cost where applicable
