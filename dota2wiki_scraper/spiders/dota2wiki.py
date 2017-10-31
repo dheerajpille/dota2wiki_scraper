@@ -36,6 +36,13 @@ class Dota2wikiSpider(scrapy.Spider):
         # TODO: used to be /text() instead of //text()
         ability_values_raw = response.xpath('//*[(@id = "mw-content-text")]//div//div//div//span//text()').extract()
 
+        # Cooldown
+        cd = response.xpath('//*[(@id = "mw-content-text")]//div//div//div[contains(@style, "display:inline-block; '
+                            'margin:8px 0px 0px 50px; width:190px; vertical-align:top;")]/text() | '
+                            '//*[(@id = "mw-content-text")]//div//div//div[contains(@style, "display:inline-block; '
+                            'margin:8px 0px 0px 50px; width:370px; vertical-align:top;")]/text()').extract()
+        print(cd)
+
         while ' ' in ability_values_raw:
             ability_values_raw.remove(' ')
 
@@ -58,6 +65,7 @@ class Dota2wikiSpider(scrapy.Spider):
         # Removes all None values in list
         ability_values = list(filter(None, ability_values))
 
+        print(ability_values)
         # Ability, Affects, and Damage values found in ability header
         ability_header_raw = response.xpath('//*[(@id = "mw-content-text")]//div//div//div[contains(@style, "display: '
                                             'inline-block; width: 32%; vertical-align: top;")]//text()').extract()
@@ -153,7 +161,7 @@ class Dota2wikiSpider(scrapy.Spider):
                     ability_table.add_row([ability_keys_data[i][j].strip(), ability_values[value_index].strip()])
                     value_index += 1
 
-            print(ability_table)
+            #print(ability_table)
             ability_table.clear_rows()
 
         # TODO: add cooldown/mana cost where applicable
