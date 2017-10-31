@@ -116,16 +116,19 @@ class Dota2wikiSpider(scrapy.Spider):
 
         cd_mana_indices = [item for item in range(len(cd_mana_clean)) if cd_mana_clean[item] == "Ability"]
 
-        print(cd_mana_indices)
-
         index = 0
         cd_mana_data = []
 
         while index < len(cd_mana_clean):
+            cd_mana_list = []
             if cd_mana_clean[index] == ':' or cd_mana_clean[index] == '+':
                 index += 1
             elif cd_mana_clean[index][0].isdigit():
-                cd_mana_data.append(cd_mana_clean[index])
+                while cd_mana_clean[index][-1] == '/':
+                    cd_mana_list.append(cd_mana_clean[index])
+                    index += 1
+                cd_mana_list.append(cd_mana_clean[index])
+                cd_mana_data.append(''.join(cd_mana_list))
             index += 1
 
         print(cd_mana_data)
@@ -167,8 +170,6 @@ class Dota2wikiSpider(scrapy.Spider):
             if index < len(ability_header_raw):
                 ability_header_clean.append(ability_header_raw[index].strip())
             index += 1
-
-        index = 0
 
         ability_header_data = []
 
