@@ -112,7 +112,23 @@ class Dota2wikiSpider(scrapy.Spider):
                 cd_mana_clean.append(cd_mana_raw[index])
                 index += 1
 
-        #print(cd_mana_clean)
+        print(cd_mana_clean)
+
+        cd_mana_indices = [item for item in range(len(cd_mana_clean)) if cd_mana_clean[item] == "Ability"]
+
+        print(cd_mana_indices)
+
+        index = 0
+        cd_mana_data = []
+
+        while index < len(cd_mana_clean):
+            if cd_mana_clean[index] == ':' or cd_mana_clean[index] == '+':
+                index += 1
+            elif cd_mana_clean[index][0].isdigit():
+                cd_mana_data.append(cd_mana_clean[index])
+            index += 1
+
+        print(cd_mana_data)
 
         # Ability, Affects, and Damage values found in ability header
         ability_header_raw = response.xpath('//*[(@id = "mw-content-text")]//div//div//div[contains(@style, "display: '
@@ -186,19 +202,17 @@ class Dota2wikiSpider(scrapy.Spider):
                 ability_keys_data[i].remove("Affects")
             if "Damage" in ability_keys_data[i]:
                 if ability_keys_data[i][ability_keys_data[i].index("Damage") + 2] == "Physical" or \
-                                ability_keys_data[i][ability_keys_data[i].index("Damage") + 2] == "Magical" or \
-                                ability_keys_data[i][ability_keys_data[i].index("Damage") + 2] == "Pure":
+                        ability_keys_data[i][ability_keys_data[i].index("Damage") + 2] == "Magical" or \
+                        ability_keys_data[i][ability_keys_data[i].index("Damage") + 2] == "Pure":
                     ability_keys_data[i].remove(ability_keys_data[i][ability_keys_data[i].index("Damage")+2])
                     ability_keys_data[i].remove(ability_keys_data[i][ability_keys_data[i].index("Damage")+1])
                 elif ability_keys_data[i][ability_keys_data[i].index("Damage") + 1] == "Physical" or \
-                                ability_keys_data[i][ability_keys_data[i].index("Damage") + 1] == "Magical" or \
-                                ability_keys_data[i][ability_keys_data[i].index("Damage") + 1] == "Pure":
+                        ability_keys_data[i][ability_keys_data[i].index("Damage") + 1] == "Magical" or \
+                        ability_keys_data[i][ability_keys_data[i].index("Damage") + 1] == "Pure":
                     ability_keys_data[i].remove(ability_keys_data[i][ability_keys_data[i].index("Damage")+1])
                 ability_keys_data[i].remove("Damage")
             if "Modifiers" in ability_keys_data[i]:
                 ability_keys_data[i] = ability_keys_data[i][:ability_keys_data[i].index("Modifiers")]
-
-        print(ability_keys_data)
 
         # Index iterator through ability values list
         value_index = 0
@@ -222,7 +236,7 @@ class Dota2wikiSpider(scrapy.Spider):
             # Check for cooldown_length with passives using passive boolean
             #ability_table.add_row(['Cooldown', cooldown_data[i]])
 
-            print(ability_table)
+            #print(ability_table)
             ability_table.clear_rows()
 
         # TODO: add cooldown/mana cost where applicable
