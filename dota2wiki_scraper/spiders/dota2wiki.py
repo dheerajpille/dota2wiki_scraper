@@ -116,7 +116,7 @@ class Dota2wikiSpider(scrapy.Spider):
 
         cd_mana_data = []
 
-        # TODO: check for ability's specific cooldown/mana cost
+        # This is the cd/mana cost values
         while cd_mana_indices:
 
             cd_mana_list = []
@@ -149,8 +149,6 @@ class Dota2wikiSpider(scrapy.Spider):
 
             cd_mana_data.append(cd_mana_list_clean)
             cd_mana_indices.pop(0)
-
-        print(cd_mana_data)
 
         # Ability, Affects, and Damage values found in ability header
         ability_header_raw = response.xpath('//*[(@id = "mw-content-text")]//div//div//div[contains(@style, "display: '
@@ -253,14 +251,17 @@ class Dota2wikiSpider(scrapy.Spider):
                     ability_table.add_row([ability_keys_data[i][j].strip(), ability_values[value_index].strip()])
                     value_index += 1
 
-            # TODO: place in try-catch loop or if statements in case of passives
-            #ability_table.add_row(['Cooldown', cd_mana_data[i][0])
-            #ability_table.add_row(['Mana cost', cd_mana_data[i][1])
+            if cd_mana_data[i]:
+                ability_table.add_row(['Cooldown', cd_mana_data[i][0]])
 
-            #print(ability_table)
+            if len(cd_mana_data[i]) == 2:
+                ability_table.add_row(['Mana Cost', cd_mana_data[i][1]])
+
+            ability_table.align = "l"
+
+            print(ability_table)
+
             ability_table.clear_rows()
-
-        # TODO: add cooldown/mana cost where applicable
 
     def parse_title(self, response):
 
