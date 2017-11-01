@@ -66,7 +66,7 @@ class Dota2wikiSpider(scrapy.Spider):
         # Removes all None values in list
         ability_values = list(filter(None, ability_values))
 
-        cd_mana_raw = response.xpath('//*[(@id = "mw-content-text")]//div//div//div//div//text()').extract()
+        cd_mana_raw = response.xpath('//*[(@id = "mw-content-text")]//div//div//div//text()').extract()
 
         for i in range(len(cd_mana_raw)):
             cd_mana_raw[i] = cd_mana_raw[i].strip().replace('\xa0', '')
@@ -77,11 +77,14 @@ class Dota2wikiSpider(scrapy.Spider):
         while 'Play' in cd_mana_raw:
             cd_mana_raw.remove('Play')
 
+        print(cd_mana_raw)
         index = 0
         cd_mana_clean = []
 
         while index < len(cd_mana_raw):
             if cd_mana_raw[index][-1] == '(':
+                if cd_mana_raw[index] != '(':
+                    cd_mana_clean.append(cd_mana_raw[index].strip('('))
                 while True:
                     index += 1
                     if cd_mana_raw[index][-1] == ')':
@@ -91,11 +94,12 @@ class Dota2wikiSpider(scrapy.Spider):
                 cd_mana_clean.append(cd_mana_raw[index])
                 index += 1
 
+
         cd_mana_indices = [item for item in range(len(cd_mana_clean)) if cd_mana_clean[item] == "Ability"]
 
         cd_mana_data = []
 
-        # This is the cd/mana cost values
+        # CD/Mana cost values
         while cd_mana_indices:
 
             cd_mana_list = []
@@ -231,6 +235,7 @@ class Dota2wikiSpider(scrapy.Spider):
                     ability_table.add_row([ability_keys_data[i][j].strip(), ability_values[value_index].strip()])
                     value_index += 1
 
+            # TODO: cover cases like OD, Enchantress, and Kunkka
             if cd_mana_data[i]:
                 ability_table.add_row(['Cooldown', cd_mana_data[i][0]])
 
