@@ -216,6 +216,8 @@ class Dota2wikiSpider(scrapy.Spider):
         # Index iterator through ability values list
         value_index = 0
 
+        ability_dict = {}
+
         # Creates each ability's table from cleaned data
         for i in range(len(ability)):
 
@@ -239,11 +241,14 @@ class Dota2wikiSpider(scrapy.Spider):
             if len(cd_mana_data[i]) == 2:
                 ability_table.add_row(['Mana Cost', cd_mana_data[i][1]])
 
+            # Aligns ability table to left
             ability_table.align = "l"
 
-            print(ability_table)
+            ability_dict[ability[i]] = ability_table
 
             ability_table.clear_rows()
+
+        print(ability_dict)
 
     def parse_title(self, response):
 
@@ -358,7 +363,7 @@ class Dota2wikiSpider(scrapy.Spider):
             misc_table.add_row([misc_key[index], misc_val[index]])
             index += 1
 
-        print(misc_table)
+        yield misc_table
 
     def parse_talent(self, response):
 
@@ -394,4 +399,4 @@ class Dota2wikiSpider(scrapy.Spider):
             level -= 5
             index += 2
 
-        yield(talent_table)
+        yield talent_table
