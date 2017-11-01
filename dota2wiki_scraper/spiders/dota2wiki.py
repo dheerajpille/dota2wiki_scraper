@@ -19,6 +19,7 @@ class Dota2wikiSpider(scrapy.Spider):
                                         'bold; font-size: 110%; border-bottom: 1px solid black; background-color: '
                                         '#B44335; color: white; padding: 3px 5px;")]/text()').extract()
 
+        # Removes unnecessary values from normal abilities
         while '\n' in ability_normal:
             ability_normal.remove('\n')
 
@@ -27,17 +28,20 @@ class Dota2wikiSpider(scrapy.Spider):
                                      'bold; font-size: 110%; border-bottom: 1px solid black; background-color: '
                                      '#414141; color: white; padding: 3px 5px;")]/text()').extract()
 
+        # Removes unnecessary values from ultimate ability
         while '\n' in ability_ult:
             ability_ult.remove('\n')
 
         # Combines normal and ultimate abilities
         ability = ability_normal + ability_ult
 
+        # Retrieves all bold keys from abilities
         ability_keys_raw = response.xpath('//*[(@id = "mw-content-text")]//div//div//div//b//text()').extract()
 
-        # TODO: used to be /text() instead of //text()
+        # Retrieves all span values from abilities
         ability_values_raw = response.xpath('//*[(@id = "mw-content-text")]//div//div//div//span//text()').extract()
 
+        # Removes whitespace values from ability_values
         while ' ' in ability_values_raw:
             ability_values_raw.remove(' ')
 
@@ -46,6 +50,7 @@ class Dota2wikiSpider(scrapy.Spider):
 
         # Removes brackets (AGHANIM'S/TALENT MODIFIERS) and keys from ability values
         while index < len(ability_values_raw):
+            # Removes values in brackets
             if ability_values_raw[index][-1] == '(':
                 ability_values.append(ability_values_raw[index][:-1])
                 index += 1
@@ -53,39 +58,13 @@ class Dota2wikiSpider(scrapy.Spider):
                     if ability_values_raw[index][-1] == ')':
                         break
                     index += 1
+            # Checks for numerical values or Global range (exception case)
             elif ability_values_raw[index][0].isdigit() or "Global" in ability_values_raw[index]:
                 ability_values.append(ability_values_raw[index].strip())
             index += 1
 
         # Removes all None values in list
         ability_values = list(filter(None, ability_values))
-
-        # Cooldown for all abilities
-        cooldown_raw = response.xpath('//*[(@id = "mw-content-text")]//div//div//div[contains(@style, "display:'
-                                      'inline-block; margin:8px 0px 0px 50px; width:190px; vertical-align:top;")]'
-                                      '/text() | '
-                                      '//*[(@id = "mw-content-text")]//div//div//div[contains(@style, "display:'
-                                      'inline-block; margin:8px 0px 0px 50px; width:370px; vertical-align:top;")]'
-                                      '/text()').extract()
-
-        index = 0
-        cooldown_data = []
-
-        while index < len(cooldown_raw):
-            cooldown_list = []
-            while cooldown_raw[index][-1] == '/':
-                cooldown_list.append(cooldown_raw[index])
-                index += 1
-            cooldown_list.append(cooldown_raw[index])
-            cooldown_data.append(''.join(cooldown_list))
-            index += 1
-
-        mana_raw = response.xpath('//*[(@id = "mw-content-text")]//div//div//div[contains(@style, "display:'
-                                  'inline-block; margin:8px 0px 0px; width:190px; vertical-align:top;")]'
-                                  '/text()').extract()
-
-        for i in range(len(mana_raw)):
-            mana_raw[i] = mana_raw[i].strip('\n')
 
         cd_mana_raw = response.xpath('//*[(@id = "mw-content-text")]//div//div//div//div//text()').extract()
 
@@ -235,6 +214,7 @@ class Dota2wikiSpider(scrapy.Spider):
         # Index iterator through ability values list
         value_index = 0
 
+        # Creates each ability's table from cleaned data
         for i in range(len(ability)):
 
             ability_table = PrettyTable(['Ability Name', ability[i]])
