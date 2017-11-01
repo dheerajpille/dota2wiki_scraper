@@ -90,12 +90,10 @@ class Dota2wikiSpider(scrapy.Spider):
         cd_mana_raw = response.xpath('//*[(@id = "mw-content-text")]//div//div//div//div//text()').extract()
 
         for i in range(len(cd_mana_raw)):
-            cd_mana_raw[i] = cd_mana_raw[i].strip().replace('\xa0','')
+            cd_mana_raw[i] = cd_mana_raw[i].strip().replace('\xa0', '')
 
         while '' in cd_mana_raw:
             cd_mana_raw.remove('')
-
-        print(cd_mana_raw)
 
         while 'Play' in cd_mana_raw:
             cd_mana_raw.remove('Play')
@@ -116,23 +114,41 @@ class Dota2wikiSpider(scrapy.Spider):
 
         cd_mana_indices = [item for item in range(len(cd_mana_clean)) if cd_mana_clean[item] == "Ability"]
 
-        print(cd_mana_indices)
-
-        index = 0
         cd_mana_data = []
 
         # TODO: check for ability's specific cooldown/mana cost
-        while index < len(cd_mana_clean):
+        while cd_mana_indices:
+
             cd_mana_list = []
-            if cd_mana_clean[index] == ':' or cd_mana_clean[index] == '+':
-                index += 1
-            elif cd_mana_clean[index][0].isdigit():
-                while cd_mana_clean[index][-1] == '/':
+            index = cd_mana_indices[0]
+
+            while index < len(cd_mana_clean):
+                if len(cd_mana_indices) > 1:
+                    if index == cd_mana_indices[1]:
+                        break
+                else:
+                    if index == len(cd_mana_indices):
+                        break
+
+                if cd_mana_clean[index] == ':' or cd_mana_clean[index] == '+':
+                    index += 2
+                    continue
+                elif cd_mana_clean[index][0].isdigit():
                     cd_mana_list.append(cd_mana_clean[index])
-                    index += 1
-                cd_mana_list.append(cd_mana_clean[index])
-                cd_mana_data.append(''.join(cd_mana_list))
-            index += 1
+                index += 1
+
+            start = 0
+            end = 0
+            cd_mana_list_clean = []
+
+            while end < len(cd_mana_list):
+                if cd_mana_list[end][-1].isdigit():
+                    cd_mana_list_clean.append(''.join(cd_mana_list[start:end+1]))
+                    start = end+1
+                end += 1
+
+            cd_mana_data.append(cd_mana_list_clean)
+            cd_mana_indices.pop(0)
 
         print(cd_mana_data)
 
@@ -237,8 +253,9 @@ class Dota2wikiSpider(scrapy.Spider):
                     ability_table.add_row([ability_keys_data[i][j].strip(), ability_values[value_index].strip()])
                     value_index += 1
 
-            # Check for cooldown_length with passives using passive boolean
-            #ability_table.add_row(['Cooldown', cooldown_data[i]])
+            # TODO: place in try-catch loop or if statements in case of passives
+            #ability_table.add_row(['Cooldown', cd_mana_data[i][0])
+            #ability_table.add_row(['Mana cost', cd_mana_data[i][1])
 
             #print(ability_table)
             ability_table.clear_rows()
