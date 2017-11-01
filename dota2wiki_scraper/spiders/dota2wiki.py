@@ -77,7 +77,6 @@ class Dota2wikiSpider(scrapy.Spider):
         while 'Play' in cd_mana_raw:
             cd_mana_raw.remove('Play')
 
-        print(cd_mana_raw)
         index = 0
         cd_mana_clean = []
 
@@ -93,7 +92,6 @@ class Dota2wikiSpider(scrapy.Spider):
             else:
                 cd_mana_clean.append(cd_mana_raw[index])
                 index += 1
-
 
         cd_mana_indices = [item for item in range(len(cd_mana_clean)) if cd_mana_clean[item] == "Ability"]
 
@@ -235,7 +233,6 @@ class Dota2wikiSpider(scrapy.Spider):
                     ability_table.add_row([ability_keys_data[i][j].strip(), ability_values[value_index].strip()])
                     value_index += 1
 
-            # TODO: cover cases like OD, Enchantress, and Kunkka
             if cd_mana_data[i]:
                 ability_table.add_row(['Cooldown', cd_mana_data[i][0]])
 
