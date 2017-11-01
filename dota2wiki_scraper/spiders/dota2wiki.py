@@ -90,10 +90,12 @@ class Dota2wikiSpider(scrapy.Spider):
         cd_mana_raw = response.xpath('//*[(@id = "mw-content-text")]//div//div//div//div//text()').extract()
 
         for i in range(len(cd_mana_raw)):
-            cd_mana_raw[i] = "".join(cd_mana_raw[i].split())
+            cd_mana_raw[i] = cd_mana_raw[i].strip().replace('\xa0','')
 
         while '' in cd_mana_raw:
             cd_mana_raw.remove('')
+
+        print(cd_mana_raw)
 
         while 'Play' in cd_mana_raw:
             cd_mana_raw.remove('Play')
@@ -112,13 +114,14 @@ class Dota2wikiSpider(scrapy.Spider):
                 cd_mana_clean.append(cd_mana_raw[index])
                 index += 1
 
-        print(cd_mana_clean)
-
         cd_mana_indices = [item for item in range(len(cd_mana_clean)) if cd_mana_clean[item] == "Ability"]
+
+        print(cd_mana_indices)
 
         index = 0
         cd_mana_data = []
 
+        # TODO: check for ability's specific cooldown/mana cost
         while index < len(cd_mana_clean):
             cd_mana_list = []
             if cd_mana_clean[index] == ':' or cd_mana_clean[index] == '+':
