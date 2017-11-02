@@ -41,18 +41,20 @@ class Dota2wikiSpider(scrapy.Spider):
         try:
             print(
                 {
-                    'title' : hero['title'],
-                    'lore' : hero['lore'],
+                    # TODO: add help command after
+                    'title': hero['title'],
+                    'lore': hero['lore'],
                     'stat_gain' : hero['stat_gain'],
-                    'data' : hero['data'],
-                    'misc_data' : hero['misc_data'],
-                    'abilities' : hero['abilities'],
-                    'talent_tree' : hero['talent_tree'],
+                    'data': hero['data'],
+                    'misc_data': hero['misc_data'],
+                    'abilities': hero['abilities'],
+                    'talent_tree': hero['talent_tree']
                 }[self.command]
             )
+        # TODO: figure out correct error to place here, instead of keeping it broad
         except:
-            print("Unknown command.")
-
+            print("Unknown command \'" + self.command + "\'.\n")
+            print("Use \'help\' to get a list of all available commands.")
 
     @staticmethod
     def parse_title(response):
