@@ -117,13 +117,13 @@ class Dota2wikiSpider(scrapy.Spider):
         # Sorts data to appropriate level list
         while index < len(data):
             if index % 4 == 0:
-                level_base.append(data[index].strip().strip('\n'))
+                level_base.append(data[index].strip().strip('\n').replace('‒', '-'))
             elif index % 4 == 1:
-                level_1.append(data[index].strip().strip('\n'))
+                level_1.append(data[index].strip().strip('\n').replace('‒', '-'))
             elif index % 4 == 2:
-                level_15.append(data[index].strip().strip('\n'))
+                level_15.append(data[index].strip().strip('\n').replace('‒', '-'))
             else:
-                level_25.append(data[index].strip().strip('\n'))
+                level_25.append(data[index].strip().strip('\n').replace('‒', '-'))
             index += 1
 
         data_table = PrettyTable([bold[0], bold[1], bold[2].strip(), bold[3].strip(), bold[4].strip()])
