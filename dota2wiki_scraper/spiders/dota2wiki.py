@@ -5,6 +5,7 @@ from prettytable import PrettyTable
 
 from dota2wiki_scraper.items import Hero
 
+
 class Dota2wikiSpider(scrapy.Spider):
     name = 'dota2wiki'
 
@@ -40,8 +41,9 @@ class Dota2wikiSpider(scrapy.Spider):
     def parse_lore(response):
 
         # Hero lore XPath
-        lore = response.xpath('//*[contains(concat( " ", @class, " " ), concat( " ", "biobox", " " ))]//'
-                              'tr[(((count(preceding-sibling::*) + 1) = 4) and parent::*)]//td/text()').extract()
+        lore = response.xpath('//*[contains(concat( " ", @class, " " ), concat( " ", "biobox", " " ))]//tr[(((count'
+                              '(preceding-sibling::*) + 1) = 4) and parent::*)]//td | //*[contains(concat( " ", @class,'
+                              ' " " ), concat( " ", "biobox", " " ))]//p/text()').extract()
 
         return lore
 
@@ -402,8 +404,6 @@ class Dota2wikiSpider(scrapy.Spider):
     @staticmethod
     def parse_talent_tree(response):
 
-        talent_table = PrettyTable(['Talent Left', 'Level', 'Talent Right'])
-
         # Talent tree XPath
         talent_raw = response.xpath('//*[contains(concat( " ", @class, " " ), concat( " ", "wikitable", " " ))]'
                                     '//td//text()').extract()
@@ -423,6 +423,8 @@ class Dota2wikiSpider(scrapy.Spider):
             if x[-1:] == '\n':
                 talent_list.append(''.join(talent_raw[start:end]))
                 start = end
+
+        talent_table = PrettyTable(['Talent Left', 'Level', 'Talent Right'])
 
         # Level and talent_list index for talent_table
         level = 25
