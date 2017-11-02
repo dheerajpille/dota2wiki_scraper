@@ -27,7 +27,7 @@ class Dota2wikiSpider(scrapy.Spider):
         hero['abilities'] = self.parse_abilities(response)
         hero['talent_tree'] = self.parse_talent_tree(response)
 
-        print(hero['data'])
+        print(hero['misc_data'])
 
     @staticmethod
     def parse_title(response):
@@ -75,24 +75,29 @@ class Dota2wikiSpider(scrapy.Spider):
     @staticmethod
     def parse_stat_gain(response):
 
-
+        # Scraped stat gain data, including stat base and stat gain per level
         stat_gain = response.xpath('//tr[(((count(preceding-sibling::*) + 1) = 3) and parent::*)]//tr//td'
-                              '//text()').extract()
+                                   '//text()').extract()
 
+        # Removing unnecessary values from stat gain
         while ' ' in stat_gain:
             stat_gain.remove(' ')
+        stat_gain = [x.strip('\n').replace(' ', '') for x in stat_gain]
 
-        stat_gain = [x.strip('\n') for x in stat_gain]
+        # Creates stat gain table to hold stat gain data
+        stat_gain_table = PrettyTable(['STR Gain', 'AGI Gain', 'INT Gain'])
 
-        stat_table = PrettyTable(['STR Gain', 'AGI Gain', 'INT Gain'])
+        # Adds all stat gain values to table
+        stat_gain_table.add_row([stat_gain[0] + stat_gain[1],
+                                 stat_gain[2] + stat_gain[3],
+                                 stat_gain[4] + stat_gain[5]])
 
-        stat_table.add_row([stat_gain[0] + stat_gain[1],
-                            stat_gain[2] + stat_gain[3],
-                            stat_gain[4] + stat_gain[5]])
+        # Aligns table to left
+        stat_gain_table.align = "l"
 
-        stat_table.align = "l"
+        print(stat_gain_table)
 
-        return stat_table
+        return stat_gain_table
 
     @staticmethod
     def parse_data(response):
@@ -148,37 +153,36 @@ class Dota2wikiSpider(scrapy.Spider):
     @staticmethod
     def parse_misc_data(response):
 
+        # Gets miscellaneous data keys
         misc_key = response.xpath('//tr[(((count(preceding-sibling::*) + 1) = 5) and parent::*)]//*'
                                   '[contains(concat( " ", @class, " " ), concat( " ", "evenrowsgray", '
                                   '" " ))]//th//text()').extract()
 
+        # Removes unnecessary data from miscellaneous keys
         while ' ' in misc_key:
             misc_key.remove(' ')
-
         while '\n' in misc_key:
             misc_key.remove('\n')
-
         for i in range(len(misc_key)):
-            misc_key[i] = misc_key[i].strip(' ')
-            misc_key[i] = misc_key[i].strip('\n')
+            misc_key[i] = misc_key[i].strip(' ').strip('\n')
 
+        # Gets miscellaneous data values
         misc_val_raw = response.xpath('//tr[(((count(preceding-sibling::*) + 1) = 5) and parent::*)]//*'
                                       '[contains(concat( " ", @class, " " ), concat( " ", "evenrowsgray", " " ))]'
                                       '//td//text()').extract()
 
+        # Removes unnecessary data from miscellaneous values
         while ' ' in misc_val_raw:
             misc_val_raw.remove(' ')
-
         while '\n' in misc_val_raw:
             misc_val_raw.remove('\n')
-
         for i in range(len(misc_val_raw)):
-            misc_val_raw[i] = misc_val_raw[i].strip(' ')
-            misc_val_raw[i] = misc_val_raw[i].strip('\n')
+            misc_val_raw[i] = misc_val_raw[i].strip(' ').strip('\n')
 
         misc_val = []
         index = 0
 
+        # Appends values separated by '/' or '+' together
         while index < len(misc_val_raw):
             if misc_val_raw[index] == '/' or misc_val_raw[index] == '+':
                 misc_val.pop()
@@ -188,9 +192,11 @@ class Dota2wikiSpider(scrapy.Spider):
                 misc_val.append(misc_val_raw[index])
                 index += 1
 
+        # Creates miscellaneous data table to hold miscellaneous data
         misc_data_table = PrettyTable(['Key', 'Value'])
         index = 0
 
+        # Adds miscellaneous data to table
         while index < len(misc_key):
             misc_data_table.add_row([misc_key[index], misc_val[index]])
             index += 1
