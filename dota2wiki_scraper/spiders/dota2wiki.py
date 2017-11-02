@@ -599,15 +599,15 @@ class Dota2wikiSpider(scrapy.Spider):
             # Aligns ability table to left
             ability_table.align = "l"
 
+            # Sets dict key to ability name and value to ability table
             ability_dict[ability[i]] = ability_table
 
-            print(ability_dict[ability[i]])
-
+            # Clears table rows for next table
             ability_table.clear_rows()
 
         yield ability_dict
 
-    def parse_talent(self, response):
+    def parse_talent_tree(self, response):
 
         talent_table = PrettyTable(['Talent Left', 'Level', 'Talent Right'])
 
