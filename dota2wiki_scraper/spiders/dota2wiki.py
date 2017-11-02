@@ -14,8 +14,6 @@ class Dota2wikiSpider(scrapy.Spider):
 
     def parse(self, response):
 
-        misc_table = PrettyTable(['Key', 'Value'])
-
         misc_key = response.xpath('//tr[(((count(preceding-sibling::*) + 1) = 5) and parent::*)]//*'
                                   '[contains(concat( " ", @class, " " ), concat( " ", "evenrowsgray", '
                                   '" " ))]//th//text()').extract()
@@ -27,12 +25,12 @@ class Dota2wikiSpider(scrapy.Spider):
             misc_key.remove('\n')
 
         for i in range(len(misc_key)):
+            misc_key[i] = misc_key[i].strip(' ')
             misc_key[i] = misc_key[i].strip('\n')
 
-        misc_val_raw = response.xpath('//*[contains(concat( " ", @class, " " ), concat( " ", "oddrowsgray", " " ))]//td'
-                                      '//text()').extract()
-
-        print(misc_key)
+        misc_val_raw = response.xpath('//tr[(((count(preceding-sibling::*) + 1) = 5) and parent::*)]//*'
+                                      '[contains(concat( " ", @class, " " ), concat( " ", "evenrowsgray", " " ))]'
+                                      '//td//text()').extract()
 
         while ' ' in misc_val_raw:
             misc_val_raw.remove(' ')
@@ -40,10 +38,14 @@ class Dota2wikiSpider(scrapy.Spider):
         while '\n' in misc_val_raw:
             misc_val_raw.remove('\n')
 
-        print(misc_val_raw)
+        for i in range(len(misc_val_raw)):
+            misc_val_raw[i] = misc_val_raw[i].strip(' ')
+            misc_val_raw[i] = misc_val_raw[i].strip('\n')
 
         misc_val = []
         index = 0
+
+        print(misc_val_raw)
 
         while index < len(misc_val_raw):
             if misc_val_raw[index] == '/' or misc_val_raw[index] == '+':
@@ -54,12 +56,14 @@ class Dota2wikiSpider(scrapy.Spider):
                 misc_val.append(misc_val_raw[index])
                 index += 1
 
+        misc_table = PrettyTable(['Key', 'Value'])
         index = 0
 
         while index < 10:
             misc_table.add_row([misc_key[index], misc_val[index]])
             index += 1
 
+        misc_table.align = "l"
         print(misc_table)
 
 
