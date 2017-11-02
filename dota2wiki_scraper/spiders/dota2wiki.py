@@ -45,8 +45,6 @@ class Dota2wikiSpider(scrapy.Spider):
         misc_val = []
         index = 0
 
-        print(misc_val_raw)
-
         while index < len(misc_val_raw):
             if misc_val_raw[index] == '/' or misc_val_raw[index] == '+':
                 misc_val.pop()
@@ -59,7 +57,7 @@ class Dota2wikiSpider(scrapy.Spider):
         misc_table = PrettyTable(['Key', 'Value'])
         index = 0
 
-        while index < 10:
+        while index < len(misc_key):
             misc_table.add_row([misc_key[index], misc_val[index]])
             index += 1
 
