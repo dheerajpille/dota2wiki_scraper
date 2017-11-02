@@ -92,26 +92,29 @@ class Dota2wikiSpider(scrapy.Spider):
     @staticmethod
     def parse_data(response):
 
-        header = response.xpath('//tr[(((count(preceding-sibling::*) + 1) = 4) and parent::*)]//tr//th//text()').extract()
+        # Keys for data table
+        bold = response.xpath('//tr[(((count(preceding-sibling::*) + 1) = 4) and parent::*)]//tr//th//text()').extract()
 
-        header = [x.strip('\n') for x in header]
+        # Stripping unnecessary values from data key
+        bold = [x.strip('\n') for x in bold]
+        while '' in bold:
+            bold.remove('')
+        while ' ' in bold:
+            bold.remove(' ')
 
-        while '' in header:
-            header.remove('')
-
-        while ' ' in header:
-            header.remove(' ')
-
+        # Values for data table
         data = response.xpath('//tr[(((count(preceding-sibling::*) + 1) = 4) and parent::*)]//*[contains(concat( " ", '
                               '@class, " " ), concat( " ", "evenrowsgray", " " ))]//td/text()').extract()
 
-        index = 0
-
+        # Various lists to store level-specific data values
         level_base = []
         level_1 = []
         level_15 = []
         level_25 = []
 
+        index = 0
+
+        # Sorts data to appropriate level list
         while index < len(data):
             if index % 4 == 0:
                 level_base.append(data[index].strip().strip('\n'))
@@ -123,13 +126,15 @@ class Dota2wikiSpider(scrapy.Spider):
                 level_25.append(data[index].strip().strip('\n'))
             index += 1
 
-        data_table = PrettyTable([header[0], header[1], header[2], header[3], header[4]])
+        data_table = PrettyTable([bold[0], bold[1], bold[2].strip(), bold[3].strip(), bold[4].strip()])
         index = 0
 
-        while index < len(header)-5:
-            data_table.add_row([header[index+5], level_base[index], level_1[index], level_15[index], level_25[index]])
+        # Places data values into data table
+        while index < len(bold)-5:
+            data_table.add_row([bold[index+5], level_base[index], level_1[index], level_15[index], level_25[index]])
             index += 1
 
+        # Aligns table to left
         data_table.align = "l"
 
         return data_table
