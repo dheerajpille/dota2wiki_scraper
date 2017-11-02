@@ -27,7 +27,7 @@ class Dota2wikiSpider(scrapy.Spider):
         hero['abilities'] = self.parse_abilities(response)
         hero['talent_tree'] = self.parse_talent_tree(response)
 
-        print(hero['talent_tree'])
+        print(hero['data'])
 
     @staticmethod
     def parse_title(response):
@@ -91,18 +91,19 @@ class Dota2wikiSpider(scrapy.Spider):
 
     @staticmethod
     def parse_data(response):
-        header = response.xpath('//*[contains(concat( " ", @class, " " ), concat( " ", "evenrowsgray", " " ))]'
-                                '//th[(((count(preceding-sibling::*) + 1) = 1) and parent::*)]//text()').extract()
 
-        header = [x.strip() for x in header]
+        header = response.xpath('//tr[(((count(preceding-sibling::*) + 1) = 4) and parent::*)]//tr//th//text()').extract()
+
+        header = [x.strip('\n') for x in header]
 
         while '' in header:
             header.remove('')
 
-        data_table = PrettyTable([header[0], 'Base', '1', '15', '25'])
+        while ' ' in header:
+            header.remove(' ')
 
-        data = response.xpath('//*[contains(concat( " ", @class, " " ), concat( " ", "evenrowsgray", " " ))]//td'
-                              '//text()').extract()
+        data = response.xpath('//tr[(((count(preceding-sibling::*) + 1) = 4) and parent::*)]//*[contains(concat( " ", '
+                              '@class, " " ), concat( " ", "evenrowsgray", " " ))]//td/text()').extract()
 
         index = 0
 
@@ -113,22 +114,25 @@ class Dota2wikiSpider(scrapy.Spider):
 
         while index < len(data):
             if index % 4 == 0:
-                level_base.append(data[index])
+                level_base.append(data[index].strip().strip('\n'))
             elif index % 4 == 1:
-                level_1.append(data[index])
+                level_1.append(data[index].strip().strip('\n'))
             elif index % 4 == 2:
-                level_15.append(data[index])
+                level_15.append(data[index].strip().strip('\n'))
             else:
-                level_25.append(data[index])
+                level_25.append(data[index].strip().strip('\n'))
             index += 1
 
+        data_table = PrettyTable([header[0], header[1], header[2], header[3], header[4]])
         index = 0
 
-        while index < len(header) - 1:
-            data_table.add_row([header[index + 1], level_base[index], level_1[index], level_15[index], level_25[index]])
+        while index < len(header)-5:
+            data_table.add_row([header[index+5], level_base[index], level_1[index], level_15[index], level_25[index]])
             index += 1
 
-        yield(data_table)
+        data_table.align = "l"
+
+        return data_table
 
     @staticmethod
     def parse_misc_data(response):
