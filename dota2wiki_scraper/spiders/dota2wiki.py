@@ -42,13 +42,17 @@ class Dota2wikiSpider(scrapy.Spider):
     def parse_lore(response):
 
         # Hero lore
-        lore_raw = response.xpath('//*[contains(concat( " ", @class, " " ), concat( " ", "biobox", " " ))]//tr[(((count(preceding-sibling::*) + 1) = 4) and parent::*)]//td | //*[contains(concat( " ", @class, " " ), concat( " ", "biobox", " " ))]//p/text()').extract()
+        lore_raw = response.xpath('//*[contains(concat( " ", @class, " " ), concat( " ", "biobox", " " ))]//tr[(((count'
+                                  '(preceding-sibling::*) + 1) = 4) and parent::*)]//td | //*[contains(concat( " ", '
+                                  '@class, " " ), concat( " ", "biobox", " " ))]//p/text()').extract()
 
+        # Retrieves necessary lore data
         lore_raw = lore_raw[0]
 
         lore = []
         index = 0
 
+        # Removes HTML tags from raw lore data
         while index < len(lore_raw):
             if lore_raw[index] == '<':
                 while True:
@@ -56,15 +60,10 @@ class Dota2wikiSpider(scrapy.Spider):
                     if lore_raw[index] == '>':
                         if index+1 < len(lore_raw) and lore_raw[index+1] == ' ':
                             index += 1
-                        else:
-                            lore.append(' ')
                         break
             else:
                 lore.append(lore_raw[index])
             index += 1
-
-        while '\n' in lore:
-            lore.remove('\n')
 
         lore = ''.join(lore)
 
