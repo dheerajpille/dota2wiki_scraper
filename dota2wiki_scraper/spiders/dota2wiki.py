@@ -8,31 +8,51 @@ from dota2wiki_scraper.items import Hero
 
 class Dota2wikiSpider(scrapy.Spider):
     name = 'dota2wiki'
+    command = ''
 
     def __init__(self, domain=None, *args, **kwargs):
         super(Dota2wikiSpider, self).__init__(*args, **kwargs)
         self.start_urls = ['https://dota2.gamepedia.com/%s' % kwargs.get('hero')]
+        self.command = kwargs.get('command')
 
     def parse(self, response):
 
         # Defines hero as Hero item defined in items.py
         hero = Hero()
 
+        #print(self.command)
+
         # Uses defined static parse methods to fill Hero fields
         hero['title'] = self.parse_title(response)
-        print(hero['title'])
+        #print(hero['title'])
         hero['lore'] = self.parse_lore(response)
-        print(hero['lore'])
+        #print(hero['lore'])
         hero['stat_gain'] = self.parse_stat_gain(response)
-        print(hero['stat_gain'])
+        #print(hero['stat_gain'])
         hero['data'] = self.parse_data(response)
-        print(hero['data'])
+        #print(hero['data'])
         hero['misc_data'] = self.parse_misc_data(response)
-        print(hero['misc_data'])
+        #print(hero['misc_data'])
         hero['abilities'] = self.parse_abilities(response)
-        print(hero['abilities'])
+        #print(hero['abilities'])
         hero['talent_tree'] = self.parse_talent_tree(response)
-        print(hero['talent_tree'])
+        #print(hero['talent_tree'])
+
+        try:
+            print(
+                {
+                    'title' : hero['title'],
+                    'lore' : hero['lore'],
+                    'stat_gain' : hero['stat_gain'],
+                    'data' : hero['data'],
+                    'misc_data' : hero['misc_data'],
+                    'abilities' : hero['abilities'],
+                    'talent_tree' : hero['talent_tree'],
+                }[self.command]
+            )
+        except:
+            print("Unknown command.")
+
 
     @staticmethod
     def parse_title(response):

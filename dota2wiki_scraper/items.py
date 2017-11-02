@@ -8,6 +8,7 @@
 import scrapy
 
 
+# Hero item which stores various Hero-related fields
 class Hero(scrapy.Item):
     title = scrapy.Field()
     lore = scrapy.Field()
