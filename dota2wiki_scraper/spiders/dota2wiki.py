@@ -27,6 +27,7 @@ class Dota2wikiSpider(scrapy.Spider):
         hero['abilities'] = self.parse_abilities(response)
         hero['talent_tree'] = self.parse_talent_tree(response)
 
+        print(hero['talent_tree'])
 
     @staticmethod
     def parse_title(response):
@@ -54,6 +55,7 @@ class Dota2wikiSpider(scrapy.Spider):
 
         # Removes HTML tags from raw lore data
         while index < len(lore_raw):
+            # Removes values inside and including HTML brackets
             if lore_raw[index] == '<':
                 while True:
                     index += 1
@@ -65,9 +67,8 @@ class Dota2wikiSpider(scrapy.Spider):
                 lore.append(lore_raw[index])
             index += 1
 
+        # Appends lore list together to new string
         lore = ''.join(lore)
-
-        print(lore)
 
         return lore
 
@@ -448,7 +449,7 @@ class Dota2wikiSpider(scrapy.Spider):
                 talent_list.append(''.join(talent_raw[start:end]))
                 start = end
 
-        talent_table = PrettyTable(['Talent Left', 'Level', 'Talent Right'])
+        talent_tree_table = PrettyTable(['Talent Left', 'Level', 'Talent Right'])
 
         # Level and talent_list index for talent_table
         level = 25
@@ -456,8 +457,10 @@ class Dota2wikiSpider(scrapy.Spider):
 
         # Adds talent_list data to talent_table
         while level >= 10:
-            talent_table.add_row([talent_list[index], level, talent_list[index + 1]])
+            talent_tree_table.add_row([talent_list[index].strip(), level, talent_list[index + 1].strip()])
             level -= 5
             index += 2
 
-        return talent_table
+        talent_tree_table.align = "l"
+
+        return talent_tree_table
