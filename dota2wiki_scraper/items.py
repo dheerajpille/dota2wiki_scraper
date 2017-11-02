@@ -8,19 +8,6 @@
 import scrapy
 
 
-class Dota2WikiScraperItem(scrapy.Item):
-    # define the fields for your item here like:
-    # name = scrapy.Field()
-    title = scrapy.Field()
-    lore = scrapy.Field()
-    stat_gain = scrapy.Field()
-    data = scrapy.Field()
-    misc_data = scrapy.Field()
-    abilities = scrapy.Field()
-    talent_tree = scrapy.Field()
-    pass
-
-
 class Hero(scrapy.Item):
     title = scrapy.Field()
     lore = scrapy.Field()
@@ -29,3 +16,4 @@ class Hero(scrapy.Item):
     misc_data = scrapy.Field()
     abilities = scrapy.Field()
     talent_tree = scrapy.Field()
+    pass
