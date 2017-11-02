@@ -20,14 +20,19 @@ class Dota2wikiSpider(scrapy.Spider):
 
         # Uses defined static parse methods to fill Hero fields
         hero['title'] = self.parse_title(response)
+        print(hero['title'])
         hero['lore'] = self.parse_lore(response)
+        print(hero['lore'])
         hero['stat_gain'] = self.parse_stat_gain(response)
+        print(hero['stat_gain'])
         hero['data'] = self.parse_data(response)
+        print(hero['data'])
         hero['misc_data'] = self.parse_misc_data(response)
-        hero['abilities'] = self.parse_abilities(response)
-        hero['talent_tree'] = self.parse_talent_tree(response)
-
         print(hero['misc_data'])
+        hero['abilities'] = self.parse_abilities(response)
+        print(hero['abilities'])
+        hero['talent_tree'] = self.parse_talent_tree(response)
+        print(hero['talent_tree'])
 
     @staticmethod
     def parse_title(response):
@@ -94,8 +99,6 @@ class Dota2wikiSpider(scrapy.Spider):
 
         # Aligns table to left
         stat_gain_table.align = "l"
-
-        print(stat_gain_table)
 
         return stat_gain_table
 
@@ -208,6 +211,7 @@ class Dota2wikiSpider(scrapy.Spider):
 
     @staticmethod
     def parse_abilities(response):
+
         # Normal abilities
         ability_normal = response.xpath('//*[(@id = "mw-content-text")]//div//div//div[contains(@style, "font-weight: '
                                         'bold; font-size: 110%; border-bottom: 1px solid black; background-color: '
@@ -239,8 +243,8 @@ class Dota2wikiSpider(scrapy.Spider):
         while ' ' in ability_values_raw:
             ability_values_raw.remove(' ')
 
-        index = 0
         ability_values = []
+        index = 0
 
         # Removes brackets (AGHANIM'S/TALENT MODIFIERS) and keys from ability values
         while index < len(ability_values_raw):
@@ -260,20 +264,21 @@ class Dota2wikiSpider(scrapy.Spider):
         # Removes all None values in list
         ability_values = list(filter(None, ability_values))
 
+        # Retrieves cooldown and mana costs for each ability
         cd_mana_raw = response.xpath('//*[(@id = "mw-content-text")]//div//div//div//text()').extract()
 
+        # Removes unnecessary information from cooldown and mana cost data
         for i in range(len(cd_mana_raw)):
             cd_mana_raw[i] = cd_mana_raw[i].strip().replace('\xa0', '')
-
         while '' in cd_mana_raw:
             cd_mana_raw.remove('')
-
         while 'Play' in cd_mana_raw:
             cd_mana_raw.remove('Play')
 
-        index = 0
         cd_mana_clean = []
+        index = 0
 
+        # Removes brackets (AGHANIM'S/TALENT MODIFIERS) from cd/mana cost values
         while index < len(cd_mana_raw):
             if cd_mana_raw[index][-1] == '(':
                 if cd_mana_raw[index] != '(':
@@ -287,16 +292,19 @@ class Dota2wikiSpider(scrapy.Spider):
                 cd_mana_clean.append(cd_mana_raw[index])
                 index += 1
 
+        # Marks indices of each ability for slicing
         cd_mana_indices = [item for item in range(len(cd_mana_clean)) if cd_mana_clean[item] == "Ability"]
 
         cd_mana_data = []
 
-        # CD/Mana cost values
+        # Gets cooldown and mana cost values for each ability, if applicable
         while cd_mana_indices:
 
+            # Empty list for new ability's cooldown/mana cost values
             cd_mana_list = []
             index = cd_mana_indices[0]
 
+            # Only gets cooldown and mana cost values, since those values have no key specified
             while index < len(cd_mana_clean):
                 if len(cd_mana_indices) > 1:
                     if index == cd_mana_indices[1]:
@@ -304,7 +312,6 @@ class Dota2wikiSpider(scrapy.Spider):
                 else:
                     if index == len(cd_mana_indices):
                         break
-
                 if cd_mana_clean[index] == ':' or cd_mana_clean[index] == '+':
                     index += 2
                     continue
@@ -312,17 +319,21 @@ class Dota2wikiSpider(scrapy.Spider):
                     cd_mana_list.append(cd_mana_clean[index])
                 index += 1
 
+            cd_mana_list_clean = []
             start = 0
             end = 0
-            cd_mana_list_clean = []
 
+            # Appends multiple values connected by '/'
             while end < len(cd_mana_list):
                 if cd_mana_list[end][-1].isdigit():
                     cd_mana_list_clean.append(''.join(cd_mana_list[start:end + 1]))
                     start = end + 1
                 end += 1
 
+            # Appends cooldown and mana cost data to list
             cd_mana_data.append(cd_mana_list_clean)
+
+            # Pops first element of indices for next loop
             cd_mana_indices.pop(0)
 
         # Ability, Affects, and Damage values found in ability header
@@ -335,7 +346,7 @@ class Dota2wikiSpider(scrapy.Spider):
         index = 0
         ability_header_clean = []
 
-        # Cleans ability header list
+        # Appends values separated by '/' and removes values in brackets
         while index < len(ability_header_raw):
             # Appends multiple type values separated by '/' together
             if ability_header_raw[index].strip() == '/':
@@ -415,12 +426,15 @@ class Dota2wikiSpider(scrapy.Spider):
         # Creates each ability's table from cleaned data
         for i in range(len(ability)):
 
+            # Table with hero's ability name
             ability_table = PrettyTable(['Ability Name', ability[i]])
 
+            # Iterates through ability header data and appends them to table
             for j in range(int(len(ability_header_data[i]) / 2)):
                 ability_table.add_row(
                     [ability_header_data[i][j * 2].strip(), ability_header_data[i][j * 2 + 1].strip()])
 
+            # Iterates through other ability data and appends them to table
             for j in range(len(ability_keys_data[i])):
                 if ability_keys_data[i][j] == "Cast Animation":
                     ability_table.add_row([ability_keys_data[i][j].strip(), ability_values[value_index].strip() + '+' +
@@ -430,13 +444,13 @@ class Dota2wikiSpider(scrapy.Spider):
                     ability_table.add_row([ability_keys_data[i][j].strip(), ability_values[value_index].strip()])
                     value_index += 1
 
+            # Adds cooldown and mana cost, if applicable
             if cd_mana_data[i]:
                 ability_table.add_row(['Cooldown', cd_mana_data[i][0]])
-
             if len(cd_mana_data[i]) == 2:
                 ability_table.add_row(['Mana Cost', cd_mana_data[i][1]])
 
-            # Aligns ability table to left
+            # Aligns table to left
             ability_table.align = "l"
 
             # Sets dict key to ability name and value to ability table
