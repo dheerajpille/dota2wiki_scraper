@@ -75,17 +75,22 @@ class Dota2wikiSpider(scrapy.Spider):
     @staticmethod
     def parse_stat_gain(response):
 
-        stat_table = PrettyTable(['STR Gain', 'AGI Gain', 'INT Gain'])
 
-        stat = response.xpath('//tr[(((count(preceding-sibling::*) + 1) = 3) and parent::*)]//tr//td'
+        stat_gain = response.xpath('//tr[(((count(preceding-sibling::*) + 1) = 3) and parent::*)]//tr//td'
                               '//text()').extract()
 
-        while ' ' in stat:
-            stat.remove(' ')
+        while ' ' in stat_gain:
+            stat_gain.remove(' ')
 
-        stat_table.add_row([stat[0] + stat[1],
-                            stat[2] + stat[3],
-                            stat[4] + stat[5]])
+        stat_gain = [x.strip('\n') for x in stat_gain]
+
+        stat_table = PrettyTable(['STR Gain', 'AGI Gain', 'INT Gain'])
+
+        stat_table.add_row([stat_gain[0] + stat_gain[1],
+                            stat_gain[2] + stat_gain[3],
+                            stat_gain[4] + stat_gain[5]])
+
+        stat_table.align = "l"
 
         return stat_table
 
@@ -126,7 +131,8 @@ class Dota2wikiSpider(scrapy.Spider):
                 level_25.append(data[index].strip().strip('\n').replace('‒', '-'))
             index += 1
 
-        data_table = PrettyTable([bold[0], bold[1], bold[2].strip(), bold[3].strip(), bold[4].strip()])
+        # Creates data table and populate it with correct headers
+        data_table = PrettyTable([bold[0].strip(), bold[1].strip(), bold[2].strip(), bold[3].strip(), bold[4].strip()])
         index = 0
 
         # Places data values into data table
@@ -438,7 +444,7 @@ class Dota2wikiSpider(scrapy.Spider):
     @staticmethod
     def parse_talent_tree(response):
 
-        # Talent tree XPath
+        # XPath to talent tree data
         talent_raw = response.xpath('//*[contains(concat( " ", @class, " " ), concat( " ", "wikitable", " " ))]'
                                     '//td//text()').extract()
 
@@ -446,7 +452,7 @@ class Dota2wikiSpider(scrapy.Spider):
         while ' ' in talent_raw:
             talent_raw.remove(' ')
 
-        # Indices and list for talent_table data
+        # Indices and list for talent table data
         start = 0
         end = 0
         talent_list = []
@@ -458,6 +464,7 @@ class Dota2wikiSpider(scrapy.Spider):
                 talent_list.append(''.join(talent_raw[start:end]))
                 start = end
 
+        # Creates table to store talent tree data
         talent_tree_table = PrettyTable(['Talent Left', 'Level', 'Talent Right'])
 
         # Level and talent_list index for talent_table
@@ -470,6 +477,7 @@ class Dota2wikiSpider(scrapy.Spider):
             level -= 5
             index += 2
 
+        # Aligns table to left
         talent_tree_table.align = "l"
 
         return talent_tree_table
