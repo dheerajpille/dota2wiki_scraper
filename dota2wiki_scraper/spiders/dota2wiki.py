@@ -14,9 +14,11 @@ class Dota2wikiSpider(scrapy.Spider):
         self.start_urls = ['https://dota2.gamepedia.com/%s' % kwargs.get('hero')]
 
     def parse(self, response):
+
         # Defines hero as Hero item defined in items.py
         hero = Hero()
 
+        # Uses defined static parse methods to fill Hero fields
         hero['title'] = self.parse_title(response)
         hero['lore'] = self.parse_lore(response)
         hero['stat_gain'] = self.parse_stat_gain(response)
@@ -25,7 +27,6 @@ class Dota2wikiSpider(scrapy.Spider):
         hero['abilities'] = self.parse_abilities(response)
         hero['talent_tree'] = self.parse_talent_tree(response)
 
-        print(hero)
 
     @staticmethod
     def parse_title(response):
@@ -40,10 +41,34 @@ class Dota2wikiSpider(scrapy.Spider):
     @staticmethod
     def parse_lore(response):
 
-        # Hero lore XPath
-        lore = response.xpath('//*[contains(concat( " ", @class, " " ), concat( " ", "biobox", " " ))]//tr[(((count'
-                              '(preceding-sibling::*) + 1) = 4) and parent::*)]//td | //*[contains(concat( " ", @class,'
-                              ' " " ), concat( " ", "biobox", " " ))]//p/text()').extract()
+        # Hero lore
+        lore_raw = response.xpath('//*[contains(concat( " ", @class, " " ), concat( " ", "biobox", " " ))]//tr[(((count(preceding-sibling::*) + 1) = 4) and parent::*)]//td | //*[contains(concat( " ", @class, " " ), concat( " ", "biobox", " " ))]//p/text()').extract()
+
+        lore_raw = lore_raw[0]
+
+        lore = []
+        index = 0
+
+        while index < len(lore_raw):
+            if lore_raw[index] == '<':
+                while True:
+                    index += 1
+                    if lore_raw[index] == '>':
+                        if index+1 < len(lore_raw) and lore_raw[index+1] == ' ':
+                            index += 1
+                        else:
+                            lore.append(' ')
+                        break
+            else:
+                lore.append(lore_raw[index])
+            index += 1
+
+        while '\n' in lore:
+            lore.remove('\n')
+
+        lore = ''.join(lore)
+
+        print(lore)
 
         return lore
 
