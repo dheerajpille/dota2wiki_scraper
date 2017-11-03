@@ -48,13 +48,21 @@ class Dota2wikiSpider(scrapy.Spider):
                     'data': hero['data'],
                     'misc_data': hero['misc_data'],
                     'abilities': hero['abilities'],
-                    'talent_tree': hero['talent_tree']
+                    'talent_tree': hero['talent_tree'],
+                    'help': 'List of scraping commands\n'
+                            'title\n'
+                            'lore\n'
+                            'stat_gain\n'
+                            'data\n'
+                            'misc_data\n'
+                            'abilities <ability>\n'
+                            'talent_tree'
                 }[self.command]
             )
         # TODO: figure out correct error to place here, instead of keeping it broad
         except:
-            print("Unknown command \'" + self.command + "\'.\n")
-            print("Use \'help\' to get a list of all available commands.")
+            print("Unknown command \'" + self.command + "\'.\n"
+                  "Use \'help\' to get a list of all available commands.")
 
     @staticmethod
     def parse_title(response):
