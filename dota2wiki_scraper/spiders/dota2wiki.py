@@ -41,7 +41,7 @@ class Dota2wikiSpider(scrapy.Spider):
         try:
             print(
                 {
-                    # TODO: add help command after
+                    # TODO: complete help command
                     'title': hero['title'],
                     'lore': hero['lore'],
                     'stat_gain' : hero['stat_gain'],
@@ -50,19 +50,18 @@ class Dota2wikiSpider(scrapy.Spider):
                     'abilities': hero['abilities'],
                     'talent_tree': hero['talent_tree'],
                     'help': 'List of scraping commands\n'
-                            'title\n'
-                            'lore\n'
-                            'stat_gain\n'
-                            'data\n'
-                            'misc_data\n'
-                            'abilities <ability>\n'
-                            'talent_tree'
+                            '   <hero> title\n'
+                            '   <hero> lore\n'
+                            '   <hero> stat_gain\n'
+                            '   <hero> data\n'
+                            '   <hero> misc_data\n'
+                            '   <hero> abilities <ability>\n'
+                            '   <hero> talent_tree'
                 }[self.command]
             )
-        # TODO: figure out correct error to place here, instead of keeping it broad
-        except:
+        except KeyError:
             print("Unknown command \'" + self.command + "\'.\n"
-                  "Use \'help\' to get a list of all available commands.")
+                  "Type \'help\' to get a list of all available commands.")
 
     @staticmethod
     def parse_title(response):
