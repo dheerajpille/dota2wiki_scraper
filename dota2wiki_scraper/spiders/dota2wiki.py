@@ -67,9 +67,7 @@ class Dota2wikiSpider(scrapy.Spider):
     def parse_title(response):
 
         # Hero title without leading and trailing spaces
-        title = response.xpath('//*[contains(concat( " ", @class, " " ), concat( " ", "biobox", " " ))]//tr'
-                               '[(((count(preceding-sibling::*) + 1) = 1) and parent::*)]//th'
-                               '/text()').extract()[1].strip()
+        title = response.xpath('//*[@id="heroBio"]/div[1]/text()').extract()[0].strip()
 
         return title
 
@@ -77,28 +75,14 @@ class Dota2wikiSpider(scrapy.Spider):
     def parse_lore(response):
 
         # Hero lore
-        lore_raw = response.xpath('//*[contains(concat( " ", @class, " " ), concat( " ", "biobox", " " ))]//tr[(((count'
-                                  '(preceding-sibling::*) + 1) = 4) and parent::*)]//td | //*[contains(concat( " ", '
-                                  '@class, " " ), concat( " ", "biobox", " " ))]//p/text()').extract()
-
-        # Retrieves necessary lore data
-        lore_raw = lore_raw[0]
+        lore_raw = response.xpath('//*[@id="heroBio"]/div[3]/div[1]/div[2]//text()').extract()
 
         lore = []
         index = 0
 
-        # Removes HTML tags from raw lore data
+        # Trims trailing newline from lore passages
         while index < len(lore_raw):
-            # Removes values inside and including HTML brackets
-            if lore_raw[index] == '<':
-                while True:
-                    index += 1
-                    if lore_raw[index] == '>':
-                        if index+1 < len(lore_raw) and lore_raw[index+1] == ' ':
-                            index += 1
-                        break
-            else:
-                lore.append(lore_raw[index])
+            lore.append(lore_raw[index].rstrip())
             index += 1
 
         # Appends lore list together to new string
@@ -110,8 +94,8 @@ class Dota2wikiSpider(scrapy.Spider):
     def parse_stat_gain(response):
 
         # Scraped stat gain data, including stat base and stat gain per level
-        stat_gain = response.xpath('//tr[(((count(preceding-sibling::*) + 1) = 3) and parent::*)]//tr//td'
-                                   '//text()').extract()
+        stat_gain = response.xpath('//tr[(((count(preceding-sibling::*) + 1) = 3) and parent::*)]//td//div//div//'+
+                                   'text()').extract()[0:6]
 
         # Removing unnecessary values from stat gain
         while ' ' in stat_gain:
@@ -145,8 +129,8 @@ class Dota2wikiSpider(scrapy.Spider):
             bold.remove(' ')
 
         # Values for data table
-        data = response.xpath('//tr[(((count(preceding-sibling::*) + 1) = 4) and parent::*)]//*[contains(concat( " ", '
-                              '@class, " " ), concat( " ", "evenrowsgray", " " ))]//td/text()').extract()
+        data = response.xpath('//tr[(((count(preceding-sibling::*) + 1) = 4) and parent::*)]//*[contains(concat' +
+                              '( " ", @class, " " ), concat( " ", "evenrowsgray", " " ))]//td/text()').extract()
 
         # Various lists to store level-specific data values
         level_base = []
@@ -186,9 +170,8 @@ class Dota2wikiSpider(scrapy.Spider):
     def parse_misc_data(response):
 
         # Gets miscellaneous data keys
-        misc_key = response.xpath('//tr[(((count(preceding-sibling::*) + 1) = 5) and parent::*)]//*'
-                                  '[contains(concat( " ", @class, " " ), concat( " ", "evenrowsgray", '
-                                  '" " ))]//th//text()').extract()
+        misc_key = response.xpath('//*[contains(concat( " ", @class, " " ), concat( " ", "oddrowsgray", " " ))]' +
+                                  '//th//text()').extract()
 
         # Removes unnecessary data from miscellaneous keys
         while ' ' in misc_key:
@@ -199,8 +182,7 @@ class Dota2wikiSpider(scrapy.Spider):
             misc_key[i] = misc_key[i].strip(' ').strip('\n')
 
         # Gets miscellaneous data values
-        misc_val_raw = response.xpath('//tr[(((count(preceding-sibling::*) + 1) = 5) and parent::*)]//*'
-                                      '[contains(concat( " ", @class, " " ), concat( " ", "evenrowsgray", " " ))]'
+        misc_val_raw = response.xpath('//*[contains(concat( " ", @class, " " ), concat( " ", "oddrowsgray", " " ))]' +
                                       '//td//text()').extract()
 
         # Removes unnecessary data from miscellaneous values
@@ -487,6 +469,8 @@ class Dota2wikiSpider(scrapy.Spider):
 
             # Clears table rows for next table
             ability_table.clear_rows()
+
+        print(ability_dict['Waveform'])
 
         return ability_dict
 
