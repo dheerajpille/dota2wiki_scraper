@@ -33,7 +33,7 @@ class Dota2wikiSpider(scrapy.Spider):
         #print(hero['data'])
         hero['misc_data'] = self.parse_misc_data(response)
         #print(hero['misc_data'])
-        hero['abilities'] = self.parse_abilities(response)
+        # hero['abilities'] = self.parse_abilities(response)
         #print(hero['abilities'])
         hero['talent_tree'] = self.parse_talent_tree(response)
         #print(hero['talent_tree'])
@@ -82,6 +82,7 @@ class Dota2wikiSpider(scrapy.Spider):
 
         # Trims trailing newline from lore passages
         while index < len(lore_raw):
+            # TODO: make sure \n is replaced with a space if possible or a newline
             lore.append(lore_raw[index].rstrip())
             index += 1
 
@@ -94,7 +95,7 @@ class Dota2wikiSpider(scrapy.Spider):
     def parse_stat_gain(response):
 
         # Scraped stat gain data, including stat base and stat gain per level
-        stat_gain = response.xpath('//tr[(((count(preceding-sibling::*) + 1) = 3) and parent::*)]//td//div//div//'+
+        stat_gain = response.xpath('//tr[(((count(preceding-sibling::*) + 1) = 3) and parent::*)]//td//div//div//' +
                                    'text()').extract()[0:6]
 
         # Removing unnecessary values from stat gain
@@ -113,6 +114,8 @@ class Dota2wikiSpider(scrapy.Spider):
         # Aligns table to left
         stat_gain_table.align = "l"
 
+        print(stat_gain_table)
+
         return stat_gain_table
 
     @staticmethod
@@ -127,6 +130,9 @@ class Dota2wikiSpider(scrapy.Spider):
             bold.remove('')
         while ' ' in bold:
             bold.remove(' ')
+
+        # Getting the first 15 bolded values
+        bold = bold[0:15]
 
         # Values for data table
         data = response.xpath('//tr[(((count(preceding-sibling::*) + 1) = 4) and parent::*)]//*[contains(concat' +
@@ -164,6 +170,8 @@ class Dota2wikiSpider(scrapy.Spider):
         # Aligns table to left
         data_table.align = "l"
 
+        print(data_table)
+
         return data_table
 
     @staticmethod
@@ -180,6 +188,11 @@ class Dota2wikiSpider(scrapy.Spider):
             misc_key.remove('\n')
         for i in range(len(misc_key)):
             misc_key[i] = misc_key[i].strip(' ').strip('\n')
+
+        # Getting the first 12 key values
+        misc_key = misc_key[0:12]
+
+        print(misc_key)
 
         # Gets miscellaneous data values
         misc_val_raw = response.xpath('//*[contains(concat( " ", @class, " " ), concat( " ", "oddrowsgray", " " ))]' +
@@ -218,6 +231,8 @@ class Dota2wikiSpider(scrapy.Spider):
         # Aligns table to left
         misc_data_table.align = "l"
 
+        print(misc_data_table)
+
         return misc_data_table
 
     @staticmethod
@@ -243,6 +258,8 @@ class Dota2wikiSpider(scrapy.Spider):
 
         # Combines normal and ultimate abilities
         ability = ability_normal + ability_ult
+
+        # TODO: fix not getting ability keys and values
 
         # Retrieves all bold keys from abilities
         ability_keys_raw = response.xpath('//*[(@id = "mw-content-text")]//div//div//div//b//text()').extract()
@@ -478,7 +495,7 @@ class Dota2wikiSpider(scrapy.Spider):
     def parse_talent_tree(response):
 
         # XPath to talent tree data
-        talent_raw = response.xpath('//*[contains(concat( " ", @class, " " ), concat( " ", "wikitable", " " ))]'
+        talent_raw = response.xpath('//*[contains(concat( " ", @class, " " ), concat( " ", "wikitable", " " ))]' +
                                     '//td//text()').extract()
 
         # Removes extra spaces generated in space of images/icons
@@ -486,17 +503,54 @@ class Dota2wikiSpider(scrapy.Spider):
             talent_raw.remove(' ')
 
         # Indices and list for talent table data
-        start = 0
-        end = 0
+        index = 0
         talent_list = []
 
-        # Appends items which do not end with newline character for talent_table formatting
-        for x in talent_raw:
-            end += 1
-            if x[-1:] == '\n':
-                talent_list.append(''.join(talent_raw[start:end]))
-                start = end
+        print(talent_raw)
 
+        while index < len(talent_raw):
+            print(talent_raw[index])
+            if talent_raw[index][-1:] == ' ':
+                if index+2 < len(talent_raw) and talent_raw[index+2][0] == ' ':
+                    talent_list.append(''.join(talent_raw[index:index+3]))
+                    index += 3
+                else:
+                    talent_list.append(''.join(talent_raw[index:index+2]))
+                    index += 2
+            elif index+1 < len(talent_raw) and talent_raw[index+1][0] == ' ':
+                talent_list.append(''.join(talent_raw[index:index+2]))
+                index += 2
+            else:
+                print(talent_raw[index])
+                talent_list.append(talent_raw[index])
+                index += 1
+
+            print(talent_list)
+
+
+        # # Appends items which modify a hero ability for talent_table formatting
+        # for x in range(len(talent_raw)):
+        #     print(x)
+        #     if talent_raw[x][-1:] == ' ':
+        #         if talent_raw[x+2][0] == ' ':
+        #             talent_list.append(''.join(talent_raw[x:x+3]))
+        #             x += 2
+        #         else:
+        #             talent_list.append(''.join(talent_raw[x:x+2]))
+        #             x += 1
+        #     elif talent_raw[x+1][0] == ' ':
+        #         talent_list.append(''.join(talent_raw[x:x+2]))
+        #         x += 1
+        #     x += 1
+        #     print(talent_list)
+
+        # for x in talent_raw:
+        #     if x[-1:] == ' ':
+        #         talent_list.append(''.join(talent_raw[start:start+3]))
+        #         start += 3
+        #     else:
+        #         print(x)
+        # print(talent_list)
         # Creates table to store talent tree data
         talent_tree_table = PrettyTable(['Talent Left', 'Level', 'Talent Right'])
 
