@@ -114,8 +114,6 @@ class Dota2wikiSpider(scrapy.Spider):
         # Aligns table to left
         stat_gain_table.align = "l"
 
-        print(stat_gain_table)
-
         return stat_gain_table
 
     @staticmethod
@@ -170,8 +168,6 @@ class Dota2wikiSpider(scrapy.Spider):
         # Aligns table to left
         data_table.align = "l"
 
-        print(data_table)
-
         return data_table
 
     @staticmethod
@@ -191,8 +187,6 @@ class Dota2wikiSpider(scrapy.Spider):
 
         # Getting the first 12 key values
         misc_key = misc_key[0:12]
-
-        print(misc_key)
 
         # Gets miscellaneous data values
         misc_val_raw = response.xpath('//*[contains(concat( " ", @class, " " ), concat( " ", "oddrowsgray", " " ))]' +
@@ -230,8 +224,6 @@ class Dota2wikiSpider(scrapy.Spider):
 
         # Aligns table to left
         misc_data_table.align = "l"
-
-        print(misc_data_table)
 
         return misc_data_table
 
@@ -506,10 +498,8 @@ class Dota2wikiSpider(scrapy.Spider):
         index = 0
         talent_list = []
 
-        print(talent_raw)
-
+        # Appends items which modify a hero ability for talent_table formatting
         while index < len(talent_raw):
-            print(talent_raw[index])
             if talent_raw[index][-1:] == ' ':
                 if index+2 < len(talent_raw) and talent_raw[index+2][0] == ' ':
                     talent_list.append(''.join(talent_raw[index:index+3]))
@@ -521,36 +511,9 @@ class Dota2wikiSpider(scrapy.Spider):
                 talent_list.append(''.join(talent_raw[index:index+2]))
                 index += 2
             else:
-                print(talent_raw[index])
                 talent_list.append(talent_raw[index])
                 index += 1
 
-            print(talent_list)
-
-
-        # # Appends items which modify a hero ability for talent_table formatting
-        # for x in range(len(talent_raw)):
-        #     print(x)
-        #     if talent_raw[x][-1:] == ' ':
-        #         if talent_raw[x+2][0] == ' ':
-        #             talent_list.append(''.join(talent_raw[x:x+3]))
-        #             x += 2
-        #         else:
-        #             talent_list.append(''.join(talent_raw[x:x+2]))
-        #             x += 1
-        #     elif talent_raw[x+1][0] == ' ':
-        #         talent_list.append(''.join(talent_raw[x:x+2]))
-        #         x += 1
-        #     x += 1
-        #     print(talent_list)
-
-        # for x in talent_raw:
-        #     if x[-1:] == ' ':
-        #         talent_list.append(''.join(talent_raw[start:start+3]))
-        #         start += 3
-        #     else:
-        #         print(x)
-        # print(talent_list)
         # Creates table to store talent tree data
         talent_tree_table = PrettyTable(['Talent Left', 'Level', 'Talent Right'])
 
@@ -566,5 +529,7 @@ class Dota2wikiSpider(scrapy.Spider):
 
         # Aligns table to left
         talent_tree_table.align = "l"
+
+        print(talent_tree_table)
 
         return talent_tree_table
